@@ -18,7 +18,7 @@ export class Application {
   constructor(config) {
     this.config = config;
     this.audit = new AuditClient({ target: config.audit });
-    this.db = new Database(config.dbPath);
+    this.db = new Database(config.dbPath, { backupDir: config.dbBackupDir });
     this.flags = new FlagStore(this.db);
     this.history = new HistoryStore(this.db);
     this.service = new FlagService({ db: this.db, flags: this.flags, history: this.history, check: new ValueCheck(config.maxValueBytes), environments: config.environments });

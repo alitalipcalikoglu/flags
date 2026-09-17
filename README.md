@@ -142,10 +142,17 @@ that is gateway-only so far). `/health` is a static check; `/ready` pings the da
 ## Backup / restore
 
 The only state to protect is the SQLite file at `DB_PATH` (default `./data/flags.db`, plus its WAL
-sidecars while running) — configuration is environment variables, not data. There is no backup
-script in this repository today; capture the file directly (stopped, or via SQLite's online backup)
-and restore by replacing it before starting the service. See [docs/READINESS.md](docs/READINESS.md)
-for the full contract.
+sidecars while running) — configuration is environment variables, not data. Use `stack backup`/
+`stack restore` from the workspace root (see `stack/docs/UPGRADE.md`) to snapshot and restore this
+consistently alongside the rest of the stack. On every start, before applying a pending migration
+to an existing database, the service itself also snapshots the file to
+`DB_PATH.pre-v<N>-<timestamp>` (directory overridable with `DB_BACKUP_DIR`) — a manual last resort
+if `stack restore` is unavailable.
+
+**Rollback limitations:** none of the migrations are reversible; to roll back, restore the
+pre-migration copy (or a `stack backup` snapshot taken before the upgrade) and run the previous
+version of this service against it. See [docs/READINESS.md](docs/READINESS.md) for the full
+contract.
 
 ## License
 

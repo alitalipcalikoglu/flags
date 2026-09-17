@@ -1,4 +1,5 @@
 import { Config } from './config.js';
+import { AuditClient } from './net/audit-client.js';
 import { Database } from './db.js';
 import { FlagService } from './domain/flag-service.js';
 import { ValueCheck } from './domain/value-check.js';
@@ -15,6 +16,7 @@ export class Application {
   /** @param {Config} config */
   constructor(config) {
     this.config = config;
+    this.audit = new AuditClient({ target: config.audit });
     this.db = new Database(config.dbPath);
     this.flags = new FlagStore(this.db);
     this.history = new HistoryStore(this.db);
@@ -41,11 +43,13 @@ export class Application {
 
   async start() {
     const { config } = this;
-    const api = new FlagsApi({ config, service: this.service, flags: this.flags, history: this.history, db: this.db });
+    const api = new FlagsApi({ config, audit: this.audit, service: this.service, flags: this.flags, history: this.history, db: this.db });
     const app = await api.build();
     this.app = app;
     this.maintenance = new Maintenance({ history: this.history, log: app.log.child({ component: 'maintenance' }), options: { historyRetentionDays: config.historyRetentionDays } });
     this.#installSignalHandlers(app.log);
+    this.audit.logger = app.log;
+    this.audit.start();
     await app.listen({ port: config.port, host: config.host });
     app.log.info({ tls: config.tls !== null, environments: config.environments, flags: this.flags.counts().total }, config.tls ? 'serving HTTPS' : 'serving plain HTTP, terminate TLS at a reverse proxy');
     this.maintenance.start();
@@ -65,6 +69,7 @@ export class Application {
     try {
       this.maintenance?.stop();
       await this.app?.close();
+      await this.audit.close();
       this.db.close();
       clearTimeout(forceExit);
       log.info('shutdown complete');

@@ -74,7 +74,7 @@ export class Config {
    * @returns {ApiKey[]}
    */
   static #parseApiKeys(raw, environments) {
-    return parseApiKeys(raw, 'FLAGS_API_KEYS', { roles: ['read', 'write', 'readwrite'], scopeValidate: (e) => environments.includes(e), scopeNoun: 'environment', minSecretLength: Config.MIN_SECRET_LENGTH })
+    return parseApiKeys(raw, 'FLAGS_API_KEYS', { roles: ['read', 'write', 'readwrite'], scopeValidate: (e) => environments.includes(e), scopeNoun: 'environment', minSecretLength: Config.MIN_SECRET_LENGTH, roleErrorMessage: () => 'must be read, write or readwrite' })
       .map(({ id, secret, role, scopes }) => ({ id, secret, role: /** @type {KeyRole} */ (role), envs: scopes }));
   }
 }

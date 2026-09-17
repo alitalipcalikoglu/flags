@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import rateLimit from '@fastify/rate-limit';
 import Fastify from 'fastify';
 import { AuditClient } from '@atc-web/service-core/audit';
-import { createErrorHandler, registerProbes } from '@atc-web/service-core/fastify';
+import { createErrorHandler, registerInfo, registerProbes } from '@atc-web/service-core/fastify';
 import { FlagError } from '../domain/errors.js';
 import { ApiKeyAuth } from './api-key-auth.js';
 import { Schemas } from './schemas.js';
@@ -30,16 +30,18 @@ export class FlagsApi {
    * @param {import('../store/flag-store.js').FlagStore} deps.flags
    * @param {import('../store/history-store.js').HistoryStore} deps.history
    * @param {import('../db.js').Database} deps.db
+   * @param {string} deps.version
    * @param {import('../types.js').Logger} [deps.logger]
    * @param {import('@atc-web/service-core/audit').AuditClient} [deps.audit]
    */
-  constructor({ config, audit, service, flags, history, db, logger }) {
+  constructor({ config, audit, service, flags, history, db, version, logger }) {
     this.config = config;
     this.audit = audit;
     this.service = service;
     this.flags = flags;
     this.history = history;
     this.db = db;
+    this.version = version;
     this.logger = logger;
     this.auth = new ApiKeyAuth(config.apiKeys);
   }
@@ -68,6 +70,12 @@ export class FlagsApi {
       if (!reply.hasHeader('cache-control')) reply.header('cache-control', 'no-store');
     });
     registerProbes(app, () => this.db.ping(), { cacheMs: FlagsApi.READY_CACHE_MS });
+    registerInfo(app, {
+      service: 'flags',
+      version: this.version,
+      capabilities: ['percentage-rollout', 'targeting-rules', 'snapshot-etag'],
+      schemaVersion: this.db.schemaVersion,
+    });
     await app.register((api) => this.#registerV1(api), { prefix: '/v1' });
     await app.register((ops) => this.#registerMetrics(ops));
     return app;

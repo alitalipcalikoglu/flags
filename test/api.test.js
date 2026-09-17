@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readServiceVersion } from '@atc-web/service-core/fastify';
 import { Maintenance } from '../src/maintenance.js';
 import { PROD_KEY, READ_KEY, RW_KEY, WRITE_KEY, bearer, buildApp } from './helpers.js';
 
@@ -10,6 +11,14 @@ test('API: probes, auth, roles and environment scoping', async (t) => {
   t.after(() => app.close());
   assert.equal((await app.inject({ url: '/health' })).statusCode, 200);
   assert.equal((await app.inject({ url: '/ready' })).statusCode, 200);
+  const version = readServiceVersion(import.meta.url);
+  const info = json(await app.inject({ url: '/v1/info' }));
+  assert.equal(info.service, 'flags');
+  assert.equal(info.version, version);
+  assert.equal(info.apiVersion, 'v1');
+  assert.deepEqual(info.capabilities, ['percentage-rollout', 'targeting-rules', 'snapshot-etag']);
+  assert.equal(typeof info.schemaVersion, 'number');
+  assert.equal(typeof info.serviceCore, 'string');
   assert.equal((await app.inject({ url: '/v1/flags' })).statusCode, 401);
   assert.equal((await app.inject({ url: '/v1/flags', headers: bearer(WRITE_KEY) })).statusCode, 403);
   assert.equal((await app.inject({ method: 'POST', url: '/v1/flags', headers: bearer(READ_KEY), payload: { key: 'a', kind: 'boolean' } })).statusCode, 403);

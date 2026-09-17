@@ -1,6 +1,7 @@
 import { Config } from './config.js';
 import { AuditClient } from '@atc-web/service-core/audit';
 import { Lifecycle } from '@atc-web/service-core/lifecycle';
+import { readServiceVersion } from '@atc-web/service-core/fastify';
 import { Database } from './db.js';
 import { FlagService } from './domain/flag-service.js';
 import { ValueCheck } from './domain/value-check.js';
@@ -17,6 +18,7 @@ export class Application {
   /** @param {Config} config */
   constructor(config) {
     this.config = config;
+    this.version = readServiceVersion(import.meta.url);
     this.audit = new AuditClient({ target: config.audit });
     this.db = new Database(config.dbPath, { backupDir: config.dbBackupDir });
     this.flags = new FlagStore(this.db);
@@ -45,7 +47,7 @@ export class Application {
 
   async start() {
     const { config } = this;
-    const api = new FlagsApi({ config, audit: this.audit, service: this.service, flags: this.flags, history: this.history, db: this.db });
+    const api = new FlagsApi({ config, audit: this.audit, service: this.service, flags: this.flags, history: this.history, db: this.db, version: this.version });
     const app = await api.build();
     this.app = app;
     this.maintenance = new Maintenance({ history: this.history, log: app.log.child({ component: 'maintenance' }), options: { historyRetentionDays: config.historyRetentionDays } });

@@ -44,6 +44,14 @@ npm run typecheck
 - **Keys** are `id:secret[:role[:envs]]`: roles `read` / `write` / `readwrite`; an environment scope hides and protects every other environment.
 - **History** records every write with actor, before and after.
 
+## Boundaries
+
+**Purpose:** feature flag evaluation with targeting and percentage rollout.
+
+**Responsibilities:** flag/environment CRUD; deterministic salted-bucket evaluation; environment snapshot with ETag; change history.
+
+**Non-responsibilities:** not an experimentation/analytics platform — no exposure logging or statistical analysis, just the evaluation decision. Not a general settings/config store, only boolean/variant flags.
+
 ## API
 
 Errors are JSON: `{ "error": { "code", "message", "details?" } }`.

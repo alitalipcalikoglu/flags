@@ -1,3 +1,4 @@
+import { readServiceVersion } from '@atc-web/service-core/fastify';
 import { Config } from '../src/config.js';
 import { Database } from '../src/db.js';
 import { FlagService } from '../src/domain/flag-service.js';
@@ -40,7 +41,7 @@ export function testService(overrides) {
 /** Fully wired Fastify app. @param {Record<string, string>} [overrides] @param {object} [deps] Extra constructor deps, e.g. an AuditClient. */
 export async function buildApp(overrides, deps = {}) {
   const t = testService(overrides);
-  const app = await new FlagsApi({ ...t, ...deps }).build();
+  const app = await new FlagsApi({ ...t, version: readServiceVersion(import.meta.url), ...deps }).build();
   await app.ready();
   return { app, ...t };
 }

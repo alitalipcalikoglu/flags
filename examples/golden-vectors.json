@@ -1,0 +1,3511 @@
+[
+  {
+    "salt": "boundary-salt-zero",
+    "id": "user-zero-pct",
+    "percentage": 0,
+    "expectedBucket": 8033,
+    "expectedDecision": "excluded",
+    "note": "boundary: percentage=0 (bucket-level; Evaluator.bucket() has no short-circuit, so this exercises the raw < comparison at its floor)"
+  },
+  {
+    "salt": "boundary-salt-hundred",
+    "id": "user-hundred-pct",
+    "percentage": 100,
+    "expectedBucket": 7624,
+    "expectedDecision": "rollout",
+    "note": "boundary: percentage=100, bucket()-level only (see evaluate()-level short-circuit regression test separately)"
+  },
+  {
+    "salt": "boundary-salt-unicode",
+    "id": "josé́-你好-😀-مرحبا",
+    "percentage": 42,
+    "expectedBucket": 1072,
+    "expectedDecision": "rollout",
+    "note": "boundary: unicode id (combining diacritic + CJK + emoji + Arabic), proves utf8 hashing"
+  },
+  {
+    "salt": "boundary-salt-empty-id",
+    "id": "",
+    "percentage": 50,
+    "expectedBucket": 6438,
+    "expectedDecision": "excluded",
+    "note": "boundary: empty id, bucket()-level only (evaluate() would short-circuit this to 'excluded' before ever calling bucket())"
+  },
+  {
+    "salt": "boundary-salt-long",
+    "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-end",
+    "percentage": 33,
+    "expectedBucket": 8430,
+    "expectedDecision": "excluded",
+    "note": "boundary: long id (513 chars)"
+  },
+  {
+    "salt": "salt-cohort-a",
+    "id": "stable-user-77",
+    "percentage": 25,
+    "expectedBucket": 4425,
+    "expectedDecision": "excluded",
+    "note": "boundary: same id as next vector, salt A"
+  },
+  {
+    "salt": "salt-cohort-b",
+    "id": "stable-user-77",
+    "percentage": 25,
+    "expectedBucket": 8926,
+    "expectedDecision": "excluded",
+    "note": "boundary: same id as previous vector, salt B (different bucket proves salt reshuffles)"
+  },
+  {
+    "salt": "B0PkGqM1Dp2UtmFQL",
+    "id": "user-470781",
+    "percentage": 84,
+    "expectedBucket": 7964,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "KbqdlWGbk0EY",
+    "id": "user-449895",
+    "percentage": 3,
+    "expectedBucket": 5628,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "IKpOmsT1Fmrs",
+    "id": "user-659859",
+    "percentage": 68,
+    "expectedBucket": 6215,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "5f6A6igawDL3eS5rRl",
+    "id": "h9I4AJuKu@sB0R93A.com",
+    "percentage": 55,
+    "expectedBucket": 4196,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "gRtW4fDYi8lRRn",
+    "id": "OumM2@Xyi1.com",
+    "percentage": 37,
+    "expectedBucket": 2632,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "TN24mLElcRRs",
+    "id": "user-336599",
+    "percentage": 2,
+    "expectedBucket": 6796,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "9J9kkIsyAzQyu",
+    "id": "ELHKoustPnk",
+    "percentage": 70,
+    "expectedBucket": 2442,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "htcJmDxS4YBj1G",
+    "id": "BjMYmyH9E10UdekFPV9YNZ",
+    "percentage": 86,
+    "expectedBucket": 8216,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "vB2Qv6Mu0jwbfOT72",
+    "id": "iqicsBJS@WmPGBDC.com",
+    "percentage": 42,
+    "expectedBucket": 7136,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "tjFqGHOBiaj6e1",
+    "id": "gYdwoRI@7UO.com",
+    "percentage": 80,
+    "expectedBucket": 6898,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "XGkefdqPPI8byurZ",
+    "id": "67qG1@QJYtEUIQ.com",
+    "percentage": 55,
+    "expectedBucket": 6664,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "79VtNP1x2t2zvHZM",
+    "id": "jr7ErNVTSl03HDeE3P",
+    "percentage": 42,
+    "expectedBucket": 2251,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "MSGckghxZZQfcqR",
+    "id": "user-856066",
+    "percentage": 63,
+    "expectedBucket": 674,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "3vgMoDrqSGEKgWQ4hdcv",
+    "id": "user-229928",
+    "percentage": 100,
+    "expectedBucket": 4776,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "0vObTXxmWFifVA1XE",
+    "id": "jIPmVoiO",
+    "percentage": 60,
+    "expectedBucket": 7949,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "m5GUd7JrcuSVp1Cl",
+    "id": "l0fi9nD@MEPj8Z.com",
+    "percentage": 34,
+    "expectedBucket": 7304,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "GVBEpEc1wApFc",
+    "id": "3VOY@KID.com",
+    "percentage": 51,
+    "expectedBucket": 2846,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "BJbRaQlwS5rM3CcJ",
+    "id": "DUhSK6Z@a4dFE.com",
+    "percentage": 68,
+    "expectedBucket": 4265,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "L0P987Y7Yjf9cE2Q",
+    "id": "0C5OpjxSdio",
+    "percentage": 62,
+    "expectedBucket": 3413,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "N8zXTaQ2pK3Cx0N",
+    "id": "user-464610",
+    "percentage": 53,
+    "expectedBucket": 3504,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "kKeNXAKZyKk8lQRJHN3V",
+    "id": "user-60400",
+    "percentage": 9,
+    "expectedBucket": 2935,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "acGdUNazZvmUOdMK0JzK",
+    "id": "miRTr56A@uP83Qv.com",
+    "percentage": 91,
+    "expectedBucket": 7714,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "4ojt8F8bOL9p7n6s",
+    "id": "nr6MtF@BkJ3O.com",
+    "percentage": 54,
+    "expectedBucket": 4103,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "K0BNCKOMzkaSxubhOrc",
+    "id": "iRnrMvvM@Yfmv2.com",
+    "percentage": 86,
+    "expectedBucket": 2627,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "CkPLU6zxk3Jkc1fHGL8G",
+    "id": "32fn5yRHBuxuN22",
+    "percentage": 24,
+    "expectedBucket": 1676,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "EGTJz9nAcjchvVGBx",
+    "id": "BvUsKqg0xh6cUJeM2l0",
+    "percentage": 22,
+    "expectedBucket": 6485,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "BzbydxDyb7VohlQX803p",
+    "id": "Zna045oia7PNfNQ",
+    "percentage": 80,
+    "expectedBucket": 9410,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "0oGwer39ImcY",
+    "id": "user-926168",
+    "percentage": 34,
+    "expectedBucket": 7258,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "6VjwreNHLOKd2QMzYnAg",
+    "id": "oLLIAzvA",
+    "percentage": 73,
+    "expectedBucket": 145,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "MOO20EWjCOym",
+    "id": "A54gE1qEXvSw7d6TCsqwqmb",
+    "percentage": 71,
+    "expectedBucket": 4804,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "pcXfTICuNKsW2",
+    "id": "DwL8szzsQvlNXI914K",
+    "percentage": 51,
+    "expectedBucket": 4175,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "1pdLbiTkokx8DS1",
+    "id": "ZwpdSU3EpM",
+    "percentage": 64,
+    "expectedBucket": 7772,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "3XMMF4z7Yf2SZp",
+    "id": "user-839077",
+    "percentage": 39,
+    "expectedBucket": 7275,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "1zwHcr77JGmf2rr9P",
+    "id": "user-304551",
+    "percentage": 20,
+    "expectedBucket": 3049,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "39NxUkJCKvEDEO",
+    "id": "user-683802",
+    "percentage": 81,
+    "expectedBucket": 8148,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iuk2gGUrbEeXDoMIG",
+    "id": "kaZWGfqoYCirMTT7E14R0wmd",
+    "percentage": 51,
+    "expectedBucket": 831,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "r88S8pXesFN9VUY9X",
+    "id": "4xIcwmTnPnWsbjl68",
+    "percentage": 34,
+    "expectedBucket": 8293,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "3UnukK3RXZRSpq",
+    "id": "7jIYu@6SlmF3yZ.com",
+    "percentage": 6,
+    "expectedBucket": 1808,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "MxiN2mecmp63",
+    "id": "uFoqQDD@Hd3FOhjI.com",
+    "percentage": 98,
+    "expectedBucket": 8771,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "onDzvGBeEUibrn",
+    "id": "2NzNn4mRZF@vOJpEo.com",
+    "percentage": 37,
+    "expectedBucket": 6616,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iEuowtpWcAZPCfIh",
+    "id": "user-826588",
+    "percentage": 22,
+    "expectedBucket": 9853,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "zVJEZMyoQ55VXNllh",
+    "id": "DHrL2tz92TaG4ogdArZ",
+    "percentage": 86,
+    "expectedBucket": 4408,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "d5uLuDXT0tlgEnWIL",
+    "id": "TrjdbVdcerEBgT7DD",
+    "percentage": 37,
+    "expectedBucket": 7280,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "9JfjeclTSxnz",
+    "id": "kB6zeg7",
+    "percentage": 58,
+    "expectedBucket": 1415,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "CAzgXPl46LArRnlP5x6l",
+    "id": "yywF8VCcjfXF",
+    "percentage": 2,
+    "expectedBucket": 2723,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "UTDOT2kXAF8WIlBj27",
+    "id": "qkSIgjHj97@sCCprs.com",
+    "percentage": 10,
+    "expectedBucket": 9434,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iDek5AHO6zUIBdsh5WVF",
+    "id": "user-305646",
+    "percentage": 57,
+    "expectedBucket": 6774,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "l65cv2HobY7Vlstmq9",
+    "id": "user-366600",
+    "percentage": 13,
+    "expectedBucket": 7190,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "mo7qtTm3GRi3F",
+    "id": "user-792638",
+    "percentage": 65,
+    "expectedBucket": 6126,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ff9RxUkthZts",
+    "id": "viMLSSbtDQf2LV",
+    "percentage": 60,
+    "expectedBucket": 2330,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "6laTh91Fa31me6zj",
+    "id": "ul43c2@sU6F5.com",
+    "percentage": 17,
+    "expectedBucket": 551,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "8SoY3FIsfZ7bTMFQiOw",
+    "id": "gfCiv@hNbg5cW.com",
+    "percentage": 24,
+    "expectedBucket": 7377,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "pII9PQxMDeN6kd",
+    "id": "odIPEWeZBi69QSNzbrYoQ",
+    "percentage": 73,
+    "expectedBucket": 847,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "k3FYVp2JcmN3qItMe",
+    "id": "user-534061",
+    "percentage": 9,
+    "expectedBucket": 1016,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "lZjkUBtdLPSiM",
+    "id": "XczwLte",
+    "percentage": 48,
+    "expectedBucket": 5850,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "SD9LXH5Mj24cy6B",
+    "id": "rFv3rqY@lSuPM5.com",
+    "percentage": 42,
+    "expectedBucket": 6084,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "wtUXE2pcJ3GPY",
+    "id": "Cyq1hyTd@PzEhyu5.com",
+    "percentage": 100,
+    "expectedBucket": 6203,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Yc3TNb7kdkm70p",
+    "id": "user-16153",
+    "percentage": 100,
+    "expectedBucket": 418,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "26x17PlWeIIsHqzkTZ",
+    "id": "GMIIfmhtkog3yPRD02",
+    "percentage": 11,
+    "expectedBucket": 8292,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "60mEuEPFrPyBidlBh8uo",
+    "id": "Pjip@O8wwEiY.com",
+    "percentage": 23,
+    "expectedBucket": 7788,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "hssJSnnuq4wl",
+    "id": "user-204077",
+    "percentage": 76,
+    "expectedBucket": 7768,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "9lBZQNA3bNLQ94",
+    "id": "8urof8DiQ",
+    "percentage": 45,
+    "expectedBucket": 7112,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ZLlZ2DIAjjCfL",
+    "id": "Qth5@ohq.com",
+    "percentage": 78,
+    "expectedBucket": 3495,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "O57JnMoIapyU",
+    "id": "MigOg",
+    "percentage": 55,
+    "expectedBucket": 5943,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "RCD78UIl2XyQ",
+    "id": "qE98DH@afbi2G3.com",
+    "percentage": 38,
+    "expectedBucket": 1763,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "VaBsYDbNDqiYGQ",
+    "id": "ZaUe5sjVIu25",
+    "percentage": 60,
+    "expectedBucket": 6596,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "GNLkDteQ7aoVi5Zxp8x",
+    "id": "ulLc2",
+    "percentage": 56,
+    "expectedBucket": 8628,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "uOH2RNDyeESH80H4",
+    "id": "epOHQC1ClBl8cNQQ4Drmd",
+    "percentage": 54,
+    "expectedBucket": 8910,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "c1LwDjgNhjcgoj",
+    "id": "1x1fb",
+    "percentage": 56,
+    "expectedBucket": 9076,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "5o13ocDi8drLHX9",
+    "id": "user-537539",
+    "percentage": 4,
+    "expectedBucket": 5622,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "aQXL6IkYJdjwmxENmtjt",
+    "id": "UW3CNmKnlZvLL7",
+    "percentage": 69,
+    "expectedBucket": 8880,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "51JYBIHm4y73",
+    "id": "eEmXXrZsLwS51NQPmOQ4gsRO",
+    "percentage": 39,
+    "expectedBucket": 472,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Wdw9tggR4GvJcPR183",
+    "id": "IYzgZwD",
+    "percentage": 26,
+    "expectedBucket": 2254,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "feQKyaXTORtpulZFh8",
+    "id": "vfyj@zXf.com",
+    "percentage": 95,
+    "expectedBucket": 4850,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Jfbs0UKtKSJZwRt9P4M",
+    "id": "bL7dLj",
+    "percentage": 97,
+    "expectedBucket": 5292,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "AsP1D6hyqXFUPgV0N4",
+    "id": "user-144608",
+    "percentage": 33,
+    "expectedBucket": 4682,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "kDe8ISra1Hnce1PAA",
+    "id": "user-416826",
+    "percentage": 58,
+    "expectedBucket": 9142,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "GihoslyVkxrs9",
+    "id": "user-820704",
+    "percentage": 19,
+    "expectedBucket": 4494,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "pqKAZK2doYSSnR3z",
+    "id": "lRGdt1XnL7",
+    "percentage": 37,
+    "expectedBucket": 1323,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "FIZXYfcTU8LjoXwS",
+    "id": "user-388680",
+    "percentage": 48,
+    "expectedBucket": 6832,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "dSzOdQwJfFp4",
+    "id": "UtAY@wOd.com",
+    "percentage": 91,
+    "expectedBucket": 1083,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "xo7hosePpRBGkYS192",
+    "id": "user-283204",
+    "percentage": 53,
+    "expectedBucket": 3538,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "lfCZJ9hZLkxtsJNk",
+    "id": "saR3uwTd4ry",
+    "percentage": 7,
+    "expectedBucket": 6153,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Vw5sI3SsWJ43Wpo1",
+    "id": "d9qzmy@POtN.com",
+    "percentage": 61,
+    "expectedBucket": 5465,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "QUaZFqZULbpQvJ6CE2z",
+    "id": "rYefGZo@XfE8drm.com",
+    "percentage": 23,
+    "expectedBucket": 36,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "3ZHVdgxm2SaEGplmVz",
+    "id": "cmOjY2YaeO@5gtUkAfE.com",
+    "percentage": 22,
+    "expectedBucket": 4976,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "l2gu7HGjPXijNuWYou",
+    "id": "85p9Vosmf",
+    "percentage": 4,
+    "expectedBucket": 2539,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "7hv0W5GhON3I",
+    "id": "eJhuRxk1@8eLf.com",
+    "percentage": 2,
+    "expectedBucket": 9725,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Xsa9TMPWmcoL",
+    "id": "8unPFSGW9gjM9yhVibmeNnu",
+    "percentage": 51,
+    "expectedBucket": 7599,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "HTBP8xVIwRNg2sT5CG",
+    "id": "uuPFxZSs6MTLHaxpcQu6BnU1",
+    "percentage": 89,
+    "expectedBucket": 7214,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "pZwQo89BM0mEK",
+    "id": "eMALu",
+    "percentage": 28,
+    "expectedBucket": 6504,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "hmvD2aUspBKJYa1ueq",
+    "id": "YoA3N4CDYL",
+    "percentage": 93,
+    "expectedBucket": 1706,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ieFUw72bLfswe",
+    "id": "0Luv6YX@TPFpXTE.com",
+    "percentage": 76,
+    "expectedBucket": 7532,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "JXNCyqYLMzTvxxlAAh",
+    "id": "user-953694",
+    "percentage": 53,
+    "expectedBucket": 1496,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "RaVv0Q6M1PpKtsCE",
+    "id": "dsyZYaMGQC4p7lOCEAEtVlsX",
+    "percentage": 2,
+    "expectedBucket": 4008,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "MmCylecTW8iK4",
+    "id": "61ZD2mJ7v9RdrM4",
+    "percentage": 85,
+    "expectedBucket": 551,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "C5hT8EeVrR7Q",
+    "id": "xgLKKw@nOG6.com",
+    "percentage": 42,
+    "expectedBucket": 7442,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "X5ipAWDHtzvtX7",
+    "id": "user-765592",
+    "percentage": 49,
+    "expectedBucket": 7667,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "LLkqZJ50ACU9Nzvz",
+    "id": "IyzrWgs@nd3p.com",
+    "percentage": 97,
+    "expectedBucket": 7157,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "S6ttyfXyYcjEtO5NENt7",
+    "id": "user-469811",
+    "percentage": 5,
+    "expectedBucket": 1726,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "51B8mY1eO9eO",
+    "id": "1JxCNqXb4wxvVsV",
+    "percentage": 25,
+    "expectedBucket": 5109,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "EHmsichggTYMzZU",
+    "id": "user-540228",
+    "percentage": 25,
+    "expectedBucket": 8185,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "BMASfKpd40oXC",
+    "id": "user-886802",
+    "percentage": 23,
+    "expectedBucket": 6857,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "QXvGUrqMXLxMLux",
+    "id": "FDeSvbSYnb@ee56B4r.com",
+    "percentage": 6,
+    "expectedBucket": 6769,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "kyH1Rud6Bb7sb",
+    "id": "M6ZNNyb0ATgMqkKnHWyi9",
+    "percentage": 74,
+    "expectedBucket": 303,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "PzgHR2eDZPZT5UeCAn",
+    "id": "F5uKOQfs",
+    "percentage": 97,
+    "expectedBucket": 2572,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "gDzfXGNPqw3jPFBv",
+    "id": "user-130627",
+    "percentage": 65,
+    "expectedBucket": 1635,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "JHIk7llv66KDrNyE",
+    "id": "olLRBFyFbFK",
+    "percentage": 4,
+    "expectedBucket": 3709,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "vAdDQFSexb3E66",
+    "id": "2Mn6LnUzS@uSa.com",
+    "percentage": 40,
+    "expectedBucket": 8772,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ZlBaV22p0K83st",
+    "id": "bXuGY6@XvuK.com",
+    "percentage": 50,
+    "expectedBucket": 4709,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Nx4PfJ1y6Doj",
+    "id": "emm5t0PsxlvLspH3Yp",
+    "percentage": 4,
+    "expectedBucket": 8961,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "DKFO4LYLIVcI2oDkQDk",
+    "id": "n4Pg4@WUG47.com",
+    "percentage": 57,
+    "expectedBucket": 3336,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "wQQCd0sehvRn4",
+    "id": "ZmicO4UiU4asBHxB5",
+    "percentage": 50,
+    "expectedBucket": 9129,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iurcfJcmkP532CRt7L",
+    "id": "J2r2IV6@d3S.com",
+    "percentage": 62,
+    "expectedBucket": 6323,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "1aiNLDnouQQjHT2Ts",
+    "id": "user-56463",
+    "percentage": 19,
+    "expectedBucket": 5058,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "qqHw7P3QDF6j",
+    "id": "4SyDGjW@gmx5f.com",
+    "percentage": 44,
+    "expectedBucket": 8127,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ELRE3Nw37gtkKs0up",
+    "id": "user-937425",
+    "percentage": 29,
+    "expectedBucket": 7934,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "kIVfsdiYmRaNEvu0",
+    "id": "user-279812",
+    "percentage": 68,
+    "expectedBucket": 3479,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Y2crfR1ZmJ1O8oyvb",
+    "id": "rbhVwItg@JtS.com",
+    "percentage": 95,
+    "expectedBucket": 7940,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "XksDjYJRuURI41QiXXri",
+    "id": "3628rMHf@d4Cnr1lY.com",
+    "percentage": 42,
+    "expectedBucket": 5417,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "FeU3teiPRnwOq80rzjxL",
+    "id": "JDVfxFM@4xYPE9EK.com",
+    "percentage": 8,
+    "expectedBucket": 8959,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "jD7XH4UnlmCAEZRDTYAO",
+    "id": "user-668957",
+    "percentage": 89,
+    "expectedBucket": 2486,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "T9RUPgHjU5Jz",
+    "id": "tqLJNlqqwy@JlLoFP82.com",
+    "percentage": 90,
+    "expectedBucket": 3965,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "gHKCmKzk3mHa",
+    "id": "Om9opXCE",
+    "percentage": 11,
+    "expectedBucket": 6803,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Ci499fS8p1Cs5lsgv",
+    "id": "93t8w@mDATM.com",
+    "percentage": 60,
+    "expectedBucket": 555,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2DGUSTpRZC4HWylPBdVM",
+    "id": "user-356775",
+    "percentage": 69,
+    "expectedBucket": 4068,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Ah70kLrjkPylDFEL7",
+    "id": "user-300673",
+    "percentage": 30,
+    "expectedBucket": 8875,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "xznNIyXEfiWWNe4",
+    "id": "bL4GtAcg9@etNfAp2D.com",
+    "percentage": 49,
+    "expectedBucket": 3882,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "xEgxxcKTI8DuEjo",
+    "id": "user-210960",
+    "percentage": 94,
+    "expectedBucket": 3018,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "bfzq2trgrOXjtW",
+    "id": "rQLnojP",
+    "percentage": 43,
+    "expectedBucket": 6236,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "NBw4vdGPAyFjSZ4YvA",
+    "id": "qdb5lbUi@SofmxS27.com",
+    "percentage": 69,
+    "expectedBucket": 2044,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "VtNDGOulLPMQzbf",
+    "id": "VZInH@FYn7L91K.com",
+    "percentage": 21,
+    "expectedBucket": 4721,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "9HizHFNplqagC",
+    "id": "user-856498",
+    "percentage": 88,
+    "expectedBucket": 4648,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "IAsnyj7XFHbpngtYR",
+    "id": "user-138432",
+    "percentage": 75,
+    "expectedBucket": 5653,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "zgdKZABVhNeUV",
+    "id": "1xm2NEPBb9Q5J08fq8",
+    "percentage": 29,
+    "expectedBucket": 3109,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "5R9Gt0DFSFi4mUngn",
+    "id": "user-700634",
+    "percentage": 37,
+    "expectedBucket": 5993,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ZyjHOKrQvTgnv4XHqYV",
+    "id": "EUVMvfeBYud6",
+    "percentage": 98,
+    "expectedBucket": 9068,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "5n4daDXt3OH6MHgz",
+    "id": "kOd0FzoG@a3hRG.com",
+    "percentage": 99,
+    "expectedBucket": 2507,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "6fUzCqcVU7Fd",
+    "id": "qCcB@dr6layKQ.com",
+    "percentage": 85,
+    "expectedBucket": 8498,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "h139GoO85zW5qh8L",
+    "id": "user-796122",
+    "percentage": 1,
+    "expectedBucket": 2757,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "tjtXl0SLnFW3Nr",
+    "id": "user-963828",
+    "percentage": 34,
+    "expectedBucket": 755,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Usw9J1XXfckR1",
+    "id": "user-30930",
+    "percentage": 83,
+    "expectedBucket": 9403,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "uFQpKPXFq0ahWw",
+    "id": "YCMypj8be@plnTjFnZ.com",
+    "percentage": 97,
+    "expectedBucket": 1370,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2Oz9ZmAR2CtgGZRCL",
+    "id": "Fy1ho@0ZPX.com",
+    "percentage": 36,
+    "expectedBucket": 1535,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "iwJquYd0EBY5YNxgz",
+    "id": "user-440286",
+    "percentage": 28,
+    "expectedBucket": 6185,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "8b97oBDo28Gfs8C6Rk",
+    "id": "qCcl7@F78rVQ5.com",
+    "percentage": 33,
+    "expectedBucket": 8017,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "SsyAiIFEyUILxT",
+    "id": "w7vxEc0JhuxMuXQl0mBQxrR",
+    "percentage": 24,
+    "expectedBucket": 550,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Fvz1pXEiRhUEo",
+    "id": "zTwdRL@fb141TPB.com",
+    "percentage": 78,
+    "expectedBucket": 8640,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "wZlfC1BKcaWr",
+    "id": "ow7b0",
+    "percentage": 46,
+    "expectedBucket": 5777,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "3uu1bQUWIaeeVaS",
+    "id": "H0wT7EI22fteWpW8",
+    "percentage": 50,
+    "expectedBucket": 2608,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Eeeq1MNPe8nv8Di3",
+    "id": "SWS5p",
+    "percentage": 28,
+    "expectedBucket": 7372,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "I2hShTd641PxjzRxjZ65",
+    "id": "DmoiIrCBDLS7",
+    "percentage": 96,
+    "expectedBucket": 3153,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "mmUtMy4sXnq3nSdnZav",
+    "id": "user-462613",
+    "percentage": 48,
+    "expectedBucket": 9324,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "1GFrjaW2jjj1GgGX",
+    "id": "0GDoLosbCb@SFlDTY6b.com",
+    "percentage": 89,
+    "expectedBucket": 7592,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "fIRxQcGbnKXGzSP8U",
+    "id": "cTBP@M2IPQaL.com",
+    "percentage": 41,
+    "expectedBucket": 266,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "b88WBZjN6OnOAaz",
+    "id": "user-25593",
+    "percentage": 86,
+    "expectedBucket": 29,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "aKdhthe7QqEvq",
+    "id": "s6I8E0c",
+    "percentage": 72,
+    "expectedBucket": 3901,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "aHutQFmxKwsIIbQwl",
+    "id": "YcfN5dhf0RWfdh1",
+    "percentage": 41,
+    "expectedBucket": 8090,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "fn3v3Q11xQwRLZXu2W",
+    "id": "user-591361",
+    "percentage": 8,
+    "expectedBucket": 9046,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "vonGqcmQBmQgT",
+    "id": "user-362851",
+    "percentage": 88,
+    "expectedBucket": 7472,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "jnn7b5DX2hDp87vm",
+    "id": "e6fx4PdwQ9ox",
+    "percentage": 20,
+    "expectedBucket": 5032,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "MvZRkVkWmxyAM",
+    "id": "MzPGldcI6G7YJw3Jto",
+    "percentage": 43,
+    "expectedBucket": 3898,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "kw0bwEpvBIb18Ho9rS",
+    "id": "B8IZPUqy",
+    "percentage": 75,
+    "expectedBucket": 9572,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "8CH6Hujkx9YZB1U",
+    "id": "9l9HbrcJJk@7Vit.com",
+    "percentage": 24,
+    "expectedBucket": 5418,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "L3NSU29IUV8TS",
+    "id": "M8Rl2ob14m",
+    "percentage": 66,
+    "expectedBucket": 8382,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "cI1dw2WMC92G9Y6c",
+    "id": "rSaNMsRIXX",
+    "percentage": 100,
+    "expectedBucket": 102,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "b96infnDMeRWnFkg",
+    "id": "user-536175",
+    "percentage": 32,
+    "expectedBucket": 2457,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "6e0VMmKuPI519f1Ze",
+    "id": "ZgBWlnMB4Sz",
+    "percentage": 42,
+    "expectedBucket": 1325,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "qBHoiaoeUUO8FRlWeU8",
+    "id": "user-588749",
+    "percentage": 88,
+    "expectedBucket": 8157,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Peekhmo1ahXfBs7x1x",
+    "id": "mTJHLr@hTgx5VMb.com",
+    "percentage": 90,
+    "expectedBucket": 8477,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "aOVq3XXocHOeuU",
+    "id": "S3Hwk8bqEkDSCH3OII1",
+    "percentage": 12,
+    "expectedBucket": 3021,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "g5WhTrCd5ilIH",
+    "id": "cs8ywvya",
+    "percentage": 11,
+    "expectedBucket": 7471,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "4RSHki3P01slJkE0l",
+    "id": "MQyrTY@dmIN.com",
+    "percentage": 5,
+    "expectedBucket": 7068,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ykK6xZJb83D4KaHsVo",
+    "id": "8u4P54vc",
+    "percentage": 77,
+    "expectedBucket": 1135,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "gH7WR0xiQPV52tCeqyKG",
+    "id": "rQv3EgNZMxJa0YLl",
+    "percentage": 89,
+    "expectedBucket": 6831,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "9erazrVzlwsOBuZ",
+    "id": "user-582725",
+    "percentage": 43,
+    "expectedBucket": 208,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Y3HaKiDDFWEC7ESiD",
+    "id": "0QyVPnUazjlbe3X0Q",
+    "percentage": 62,
+    "expectedBucket": 7126,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "uUDaOFJvAdTR9qai",
+    "id": "R4yj9r7YgJ@O1Nn3.com",
+    "percentage": 18,
+    "expectedBucket": 2645,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "qnHMv3YyIg0bGMoEZ",
+    "id": "gBfGXO4eIo9TQI",
+    "percentage": 5,
+    "expectedBucket": 5777,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "B8opRMKrKV0N",
+    "id": "l5JXrT7zW4LvyhbstuqPk",
+    "percentage": 34,
+    "expectedBucket": 6800,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "YORQooIIhOGHDIA4",
+    "id": "user-245116",
+    "percentage": 3,
+    "expectedBucket": 8693,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "bJoCDWcNcntQqgeg",
+    "id": "hmv0COAT@YAUVxM.com",
+    "percentage": 12,
+    "expectedBucket": 5154,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "btMAq2tNcVaLboSX",
+    "id": "VsY6AsxtHfvooIh6zFwKOY",
+    "percentage": 61,
+    "expectedBucket": 4413,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Ee58I1XA4fa8hxh0yNS7",
+    "id": "dZMXYYQP@cgoHt4N.com",
+    "percentage": 11,
+    "expectedBucket": 5534,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Exm25i4AlfWonD8gERR6",
+    "id": "P7P5j@2qPtM0.com",
+    "percentage": 57,
+    "expectedBucket": 5898,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "uLon1Ne1U31WWtMEVYy5",
+    "id": "user-672357",
+    "percentage": 43,
+    "expectedBucket": 8025,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "lBPvV2bJ6yNcoax",
+    "id": "user-385438",
+    "percentage": 60,
+    "expectedBucket": 6985,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ZBDVseqrIqQ8I",
+    "id": "user-320397",
+    "percentage": 1,
+    "expectedBucket": 2875,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "VetQ0js8lTs4HSln3P",
+    "id": "SCKeh@kmfTmU1.com",
+    "percentage": 53,
+    "expectedBucket": 8746,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "qoem7G2dZvWXerRRjL",
+    "id": "user-128941",
+    "percentage": 11,
+    "expectedBucket": 4494,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "vUzrYmmFwQtZ",
+    "id": "user-550994",
+    "percentage": 7,
+    "expectedBucket": 4596,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "RhyClu15q2cV",
+    "id": "GKkABSopG@Ycox9.com",
+    "percentage": 7,
+    "expectedBucket": 3129,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "dCxyF2SXh6fUjnGZuLWx",
+    "id": "user-4700",
+    "percentage": 91,
+    "expectedBucket": 5659,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "xIE7o9GHYae1FRd",
+    "id": "EQbBt1UtDfGI6sFZQQKN",
+    "percentage": 13,
+    "expectedBucket": 2830,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "pjhgSMYrTEASXu0vRQjO",
+    "id": "ho9N@7Y4tna4.com",
+    "percentage": 1,
+    "expectedBucket": 7023,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "w6AEjokoLHqiUe",
+    "id": "48mp@7SJZO.com",
+    "percentage": 10,
+    "expectedBucket": 3244,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "fLaO7cC37WIJSlya",
+    "id": "Kk76@rzpvw.com",
+    "percentage": 63,
+    "expectedBucket": 9326,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "rUvPCE8gYjdbvTGovxn",
+    "id": "oaOSGyhZHcehjf3p9",
+    "percentage": 43,
+    "expectedBucket": 4095,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "CSkI6mHPlQt2DOmTd",
+    "id": "exrHz@bHw0h2.com",
+    "percentage": 42,
+    "expectedBucket": 4250,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "jdKB6B8M4ZA9yCS",
+    "id": "tzMLJeySs@UMdA.com",
+    "percentage": 20,
+    "expectedBucket": 7988,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "y4KnMRiM2agG",
+    "id": "pFx1ZtbJx1wuQ",
+    "percentage": 5,
+    "expectedBucket": 3585,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "b94F0fZcKRWuAC8Hv",
+    "id": "user-384205",
+    "percentage": 0,
+    "expectedBucket": 267,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "0PPE3mPD5gSvcSOLE",
+    "id": "wX8dA@EAJXmMG.com",
+    "percentage": 25,
+    "expectedBucket": 9612,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ZqvJRpgQoHJj",
+    "id": "ttPuVV",
+    "percentage": 26,
+    "expectedBucket": 3053,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "MLzCuoW7NdgOh0cDGAn",
+    "id": "user-177760",
+    "percentage": 64,
+    "expectedBucket": 5823,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Jg7rdH69YQKIu3kp",
+    "id": "user-78904",
+    "percentage": 3,
+    "expectedBucket": 3550,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "O2S061SK43irGGMUrqMV",
+    "id": "pnCtLrhrdUTHQHBSG0Sw",
+    "percentage": 30,
+    "expectedBucket": 8737,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "8EAeu8siNoYfmW8qDDUa",
+    "id": "nPS4zZberGg9fwPufcaIJf",
+    "percentage": 36,
+    "expectedBucket": 8646,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "38sBmCG8IxjEPksqlRt",
+    "id": "user-820467",
+    "percentage": 9,
+    "expectedBucket": 9457,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "K9VCNZHw43dTWNNL",
+    "id": "aBgPRJuqQs5dy",
+    "percentage": 33,
+    "expectedBucket": 6694,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "9CpnukOLwSJl8",
+    "id": "user-727763",
+    "percentage": 4,
+    "expectedBucket": 2728,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "4ABJEemDCmKo0veT",
+    "id": "zf9fhDWO@GUu3xp.com",
+    "percentage": 19,
+    "expectedBucket": 4524,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ngMhJd8h9GQLp",
+    "id": "user-351759",
+    "percentage": 14,
+    "expectedBucket": 7340,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "TjMNrhE390mYq",
+    "id": "user-415548",
+    "percentage": 62,
+    "expectedBucket": 3584,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2lJKH6evnLGL",
+    "id": "NP6vbfDbUnezDYVyAWbw",
+    "percentage": 14,
+    "expectedBucket": 2159,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iEihThFCJVL5W0NG",
+    "id": "7Y8R1FW36ERRB67",
+    "percentage": 62,
+    "expectedBucket": 1619,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "EXtecxXmhTe2uWlTzRi",
+    "id": "zVv699n5GGAZAF",
+    "percentage": 23,
+    "expectedBucket": 9234,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "kxYkUZJC3s99IGX",
+    "id": "RHi2Jkm5ECAv0wiah",
+    "percentage": 29,
+    "expectedBucket": 1419,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "oJtEE7oxc0BM56skb9m",
+    "id": "user-48710",
+    "percentage": 35,
+    "expectedBucket": 1893,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "m8VljxTKuTpuj69",
+    "id": "KCNsr5YL3Q847PqPwUV",
+    "percentage": 72,
+    "expectedBucket": 5295,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ytpveMJJEMxqNCo",
+    "id": "user-946369",
+    "percentage": 43,
+    "expectedBucket": 6565,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "MIxSwzVrKzmh2VxIIHN",
+    "id": "user-502439",
+    "percentage": 64,
+    "expectedBucket": 2221,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "gSL3ieZpfsjvTnyE",
+    "id": "GAp8BNfGVpk9K",
+    "percentage": 3,
+    "expectedBucket": 1601,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ZlgotfqsypeaLdVc",
+    "id": "user-915872",
+    "percentage": 3,
+    "expectedBucket": 9102,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "2WcelE6NRkOsJNOH4iQJ",
+    "id": "hsgLa5Zh7r@9C6jZ.com",
+    "percentage": 81,
+    "expectedBucket": 9018,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "0f5wBPLRHLDBPeedJNiS",
+    "id": "ZdN1fcfv4r@ICBA.com",
+    "percentage": 26,
+    "expectedBucket": 1108,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2rpDzJ3aQHtMpWsOp",
+    "id": "user-34009",
+    "percentage": 99,
+    "expectedBucket": 8983,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "67v9SEninpvWfh",
+    "id": "user-357662",
+    "percentage": 76,
+    "expectedBucket": 5493,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "HCdutEOzdQt5GxCckC",
+    "id": "user-87082",
+    "percentage": 21,
+    "expectedBucket": 2101,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "yN0qUN7RktkUWMBer",
+    "id": "euxK7Slpz6dJ",
+    "percentage": 11,
+    "expectedBucket": 2074,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "H4pYdO6tA4PvEqza8E",
+    "id": "user-12565",
+    "percentage": 23,
+    "expectedBucket": 213,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Zpx2dA8ULjIDH8rTef",
+    "id": "wBGG6O@oyQ.com",
+    "percentage": 28,
+    "expectedBucket": 4133,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "LapwSjN8N0xqrbykCwSV",
+    "id": "GkUP@lCT.com",
+    "percentage": 53,
+    "expectedBucket": 9494,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "0p5QLzMsuDfMkbMiTH",
+    "id": "ZJhTgMjPalfH",
+    "percentage": 31,
+    "expectedBucket": 6173,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "1JhXyErpawuDt4y1iD",
+    "id": "user-636311",
+    "percentage": 62,
+    "expectedBucket": 6280,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "e2Ty4fE8sf0hWrDFoTq8",
+    "id": "PtKPGNZ3yn@VHgFor.com",
+    "percentage": 88,
+    "expectedBucket": 788,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "X2URgYyNdoImmg",
+    "id": "8DLkNx@LvEd.com",
+    "percentage": 66,
+    "expectedBucket": 4066,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "HRonfk1aIR1TAnaeH1",
+    "id": "user-251755",
+    "percentage": 48,
+    "expectedBucket": 4050,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "5AeFXGagcfrgfv",
+    "id": "akA502b@MG1UA8.com",
+    "percentage": 39,
+    "expectedBucket": 8506,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "CpAX74a37RYQ46",
+    "id": "0I0OH9nf7vBc",
+    "percentage": 77,
+    "expectedBucket": 7248,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "bJiPkquJupLJkk",
+    "id": "mgup@CT2TzJ.com",
+    "percentage": 87,
+    "expectedBucket": 5579,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "OKGsYkAGO0Riab",
+    "id": "OxwPV1Iz@OK2P2i0.com",
+    "percentage": 22,
+    "expectedBucket": 2909,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "WgepmbdVfIZGIk",
+    "id": "user-356490",
+    "percentage": 39,
+    "expectedBucket": 4444,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "CzAdcv7I3hJLzN",
+    "id": "m2N5fD7I4PYQ4FIBVgkPLEiy",
+    "percentage": 49,
+    "expectedBucket": 1219,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ZbLXNSz9l060",
+    "id": "es6v@qn4kgsO3.com",
+    "percentage": 40,
+    "expectedBucket": 2426,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "SbIu8oEJ5WYa",
+    "id": "o4sfKLf54kbUC3gPZOG7IEE",
+    "percentage": 7,
+    "expectedBucket": 634,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "BtPcs91mx36dyIl1U",
+    "id": "icUEfh@3EHn1aB.com",
+    "percentage": 0,
+    "expectedBucket": 7452,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Q9jbZWAP30xD",
+    "id": "wkIpGLUAg",
+    "percentage": 75,
+    "expectedBucket": 8900,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "9YmPg3LCLWlwBwik3xbJ",
+    "id": "ZqJEOOAMhf@cLxva.com",
+    "percentage": 84,
+    "expectedBucket": 308,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "mWFP8pySAeGR",
+    "id": "fp88ioohWx5Z4V9pzj",
+    "percentage": 2,
+    "expectedBucket": 2655,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "oAFXOoJEIddLVnecI2a8",
+    "id": "wuHW@t0rKOajS.com",
+    "percentage": 88,
+    "expectedBucket": 8185,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "MMlFdOwrP3gCU",
+    "id": "i48hkoLz@RCIc02.com",
+    "percentage": 34,
+    "expectedBucket": 8542,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "63DBaAx9Z0fM",
+    "id": "user-958404",
+    "percentage": 75,
+    "expectedBucket": 5764,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "AQFbqRqwSNjdhTwPad",
+    "id": "user-297200",
+    "percentage": 51,
+    "expectedBucket": 2145,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "uY4mNU1ZRz4B5QpjjVV5",
+    "id": "qr65fCv3WCfg6x8ttaYWz",
+    "percentage": 68,
+    "expectedBucket": 7705,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "JJUxEAdIWVoJ",
+    "id": "DrLHdUr@oNXvyN.com",
+    "percentage": 4,
+    "expectedBucket": 4425,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ilOFzn0StpHh",
+    "id": "user-50901",
+    "percentage": 1,
+    "expectedBucket": 7114,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "j6AHvS5uugmHjXN9kVk",
+    "id": "DdRTLnfQzL@fXfFHrOh.com",
+    "percentage": 29,
+    "expectedBucket": 8129,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "NYuQEz2nWams",
+    "id": "user-222546",
+    "percentage": 68,
+    "expectedBucket": 5876,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "3IHcqRg46mKZFKUgkHMm",
+    "id": "B6S7Mu@qUmH.com",
+    "percentage": 2,
+    "expectedBucket": 1506,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "IDUEzW4O9kxrBnP",
+    "id": "o82R@jFgZicf5.com",
+    "percentage": 52,
+    "expectedBucket": 8096,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "DgPRHXZade5L",
+    "id": "tS1pEu4d",
+    "percentage": 65,
+    "expectedBucket": 7121,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "U4DwTg3eF7PpG",
+    "id": "jHTwRai4wGH4YXfJp",
+    "percentage": 91,
+    "expectedBucket": 3468,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "vxHGcnBctoB0U9PgYs5y",
+    "id": "user-844711",
+    "percentage": 0,
+    "expectedBucket": 8631,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "BGCaetJkjRrwdcPmf",
+    "id": "DSIVCqBy@O6R.com",
+    "percentage": 28,
+    "expectedBucket": 9802,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "15V5ibzpGgGb",
+    "id": "2yYH7Tf9dCwGJzF6eGAizbBC",
+    "percentage": 70,
+    "expectedBucket": 1853,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "7Urs4Xl4IRao4Aa3e",
+    "id": "gkXVL5LM@BYo.com",
+    "percentage": 61,
+    "expectedBucket": 121,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "1MfrYC3RAoyzzDN",
+    "id": "XANHTDihVm@umoZa6y.com",
+    "percentage": 67,
+    "expectedBucket": 4689,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "v7EWsyPRngWV",
+    "id": "user-369070",
+    "percentage": 66,
+    "expectedBucket": 5529,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Rk7cOTYoWzo2EYjKKpmE",
+    "id": "b9P9v0950",
+    "percentage": 83,
+    "expectedBucket": 5758,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Tlgu8wBaFCYy05r",
+    "id": "user-622678",
+    "percentage": 100,
+    "expectedBucket": 9559,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "1KrA6WeWSr68",
+    "id": "user-147830",
+    "percentage": 68,
+    "expectedBucket": 4633,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "oTs5mt5B1XHuD3",
+    "id": "xqVSV163tj4AwVd",
+    "percentage": 46,
+    "expectedBucket": 4036,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "1D9Sr2SrdbW36AaL7Tik",
+    "id": "EpN0hOIk@WAq5F.com",
+    "percentage": 83,
+    "expectedBucket": 2906,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Ref9t84A3j0Os",
+    "id": "FIFGl2xUiD4ZBHkm",
+    "percentage": 6,
+    "expectedBucket": 2814,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "fvhHjpAMYsiy8f",
+    "id": "user-481377",
+    "percentage": 39,
+    "expectedBucket": 9212,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iDdJncFkPPHTa",
+    "id": "mBaSky6ktdxmhV",
+    "percentage": 5,
+    "expectedBucket": 2621,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "KKcLYvusA0NjU",
+    "id": "jaVwC1@RFC.com",
+    "percentage": 68,
+    "expectedBucket": 4871,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "T2CDpA5GU3xkJ",
+    "id": "user-667323",
+    "percentage": 7,
+    "expectedBucket": 9758,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "eJcipQgOSfe9LfuvQ4G",
+    "id": "6yDqUs2tWeU",
+    "percentage": 85,
+    "expectedBucket": 4114,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "KeoQRi7eX6txVBG",
+    "id": "aUppqfw8Y@RcNK3.com",
+    "percentage": 17,
+    "expectedBucket": 9719,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "POvXrB07iduL080",
+    "id": "n7sHFXfs12QFf0LcdQCbPKxB",
+    "percentage": 60,
+    "expectedBucket": 2493,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "jdJ5uRPtB1vqwZj2Zyx",
+    "id": "user-172260",
+    "percentage": 4,
+    "expectedBucket": 4599,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "8tjWhtNWuMwiHEPCzGm",
+    "id": "zOoe6hUrOV9LTCycD",
+    "percentage": 77,
+    "expectedBucket": 7692,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Dt9H7PXQLkvGAlfKJfQR",
+    "id": "user-535227",
+    "percentage": 11,
+    "expectedBucket": 271,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "dpCMdiddUXlD0rChd",
+    "id": "vnUDns@r6kSBYD4.com",
+    "percentage": 19,
+    "expectedBucket": 9264,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "qD87DaimsgKYDQ",
+    "id": "user-288681",
+    "percentage": 14,
+    "expectedBucket": 7397,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "rFu0X4lCL43NV",
+    "id": "H4sJhO",
+    "percentage": 49,
+    "expectedBucket": 8448,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "QZ9HDdcWtikJ6O",
+    "id": "IziPqs@E1d8JD87.com",
+    "percentage": 53,
+    "expectedBucket": 6530,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "pQdf92B8qe5jW6H",
+    "id": "f6p1zX",
+    "percentage": 14,
+    "expectedBucket": 2937,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iZOVnld0yoo4Yu8Jp9Ni",
+    "id": "user-872908",
+    "percentage": 20,
+    "expectedBucket": 7831,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "zvmSfjEJPnLAA",
+    "id": "user-567513",
+    "percentage": 35,
+    "expectedBucket": 7196,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ofelBXcScNXrjN",
+    "id": "user-462271",
+    "percentage": 15,
+    "expectedBucket": 6631,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "1INX3tjDvRGshsxVxwW",
+    "id": "NBl0DxMfyYvp4Mw1",
+    "percentage": 76,
+    "expectedBucket": 9958,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "VZlcCKs7ovhY47IaLs",
+    "id": "user-300692",
+    "percentage": 72,
+    "expectedBucket": 5951,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "zqwX3lCmVbvjSH",
+    "id": "user-453197",
+    "percentage": 55,
+    "expectedBucket": 9663,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "94tMDnQkFmEPe",
+    "id": "DRPEnE@ypI.com",
+    "percentage": 96,
+    "expectedBucket": 9985,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "q1F9A1mEqGvqdfE4TmF",
+    "id": "Qe56JHsQjogZrIpKvV",
+    "percentage": 54,
+    "expectedBucket": 2334,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "w9eG8l7LqD2OD3",
+    "id": "1vOhvJgt4N0MrZYtEOIqd",
+    "percentage": 96,
+    "expectedBucket": 4866,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "w9Ijbep2V3we4chYWi",
+    "id": "dEfY9n@WSP.com",
+    "percentage": 9,
+    "expectedBucket": 691,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "vmiBfUXXaHf5i3hBI",
+    "id": "TRnw@7vIAK.com",
+    "percentage": 2,
+    "expectedBucket": 8398,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "g1QY629Vb7CIEpVPVcM2",
+    "id": "inQjiMrJgeAv4vVI2DoM0Jk",
+    "percentage": 26,
+    "expectedBucket": 25,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ONhFjqB1UgDGXTO2zw",
+    "id": "2Ly3@KFt.com",
+    "percentage": 21,
+    "expectedBucket": 9803,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Af1f4i2zuZgYc6eda85T",
+    "id": "oK9PdoNN5m3E9",
+    "percentage": 21,
+    "expectedBucket": 6476,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "HXh9jqZUztvsnq15vW",
+    "id": "iRVMF9gE4D@01y69sdF.com",
+    "percentage": 99,
+    "expectedBucket": 7192,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "TtxlncBiGLJXJbrZ6a",
+    "id": "user-1873",
+    "percentage": 96,
+    "expectedBucket": 3965,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Ys6sEMGMS09Iaa",
+    "id": "user-377224",
+    "percentage": 79,
+    "expectedBucket": 1730,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "V1PYLRzkIT6lrN",
+    "id": "qbzow2TFE4El",
+    "percentage": 70,
+    "expectedBucket": 2005,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "XUdcEhcTJtHvqA",
+    "id": "nNZeWM",
+    "percentage": 67,
+    "expectedBucket": 1690,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "OX7kLRnTV9pwV1",
+    "id": "evzbRI@NRDPXv0.com",
+    "percentage": 24,
+    "expectedBucket": 6339,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "q24WytDrNwkFHkFJNiy",
+    "id": "8kTTZ6PExuJJDC9kOlA",
+    "percentage": 94,
+    "expectedBucket": 6826,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "x9lVuD4Qna03WlRIgy",
+    "id": "SUx45@SiwTXB.com",
+    "percentage": 31,
+    "expectedBucket": 3317,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "USg69NL1cuD449AzY4Y",
+    "id": "user-591713",
+    "percentage": 87,
+    "expectedBucket": 1502,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Qs4lzcVjkibsHWCdmr",
+    "id": "3wxK47y@es7wtlfY.com",
+    "percentage": 62,
+    "expectedBucket": 5270,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "O1AiGnu2zd73GMx",
+    "id": "hLDDI@ysi.com",
+    "percentage": 43,
+    "expectedBucket": 9628,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "MkAGAU2WVgtPS",
+    "id": "5ySX7IpJ0Zhmbo4UbQaOs",
+    "percentage": 27,
+    "expectedBucket": 6034,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "HQ4K57PLji2wzp4k0T0E",
+    "id": "tDnHDRbQ23C",
+    "percentage": 45,
+    "expectedBucket": 8245,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "6vjUBg4dlp7pyOaAv5",
+    "id": "6hnMrgI",
+    "percentage": 42,
+    "expectedBucket": 4250,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "LArOpE3u8PtDs",
+    "id": "Jwypi@M9a.com",
+    "percentage": 4,
+    "expectedBucket": 8547,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "3uDJLWmPjTrtKUOQV4F",
+    "id": "sVD1Hi3GmpTVn",
+    "percentage": 14,
+    "expectedBucket": 9223,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "KCfJgZgHHkiQ6X",
+    "id": "l6MMXU@0qx0.com",
+    "percentage": 43,
+    "expectedBucket": 7525,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "elYAmhHvsBIYT",
+    "id": "user-85015",
+    "percentage": 50,
+    "expectedBucket": 6681,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "t1ZaTi4YQRZgcnjkzWb",
+    "id": "vcqzrkr0sG7jcmmlK",
+    "percentage": 83,
+    "expectedBucket": 9902,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ETjV7nKjpQoHkU0lFre",
+    "id": "5v8qiIMC0nz4XHXRl2",
+    "percentage": 88,
+    "expectedBucket": 1809,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "fAcjOs9xMn3B9SNT",
+    "id": "user-232515",
+    "percentage": 40,
+    "expectedBucket": 6435,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "6LAVDNOqIQmnvQ69WG",
+    "id": "user-678098",
+    "percentage": 85,
+    "expectedBucket": 2354,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "dieciVM5iYO7gOzO",
+    "id": "iPftCUo@xQ3.com",
+    "percentage": 42,
+    "expectedBucket": 2681,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ul0uTVcBD9aOxvsM",
+    "id": "nSyYy1ZWg41cKXitdG1jFfPl",
+    "percentage": 89,
+    "expectedBucket": 6242,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "cQNiUqNwoj1yNyBbBEj",
+    "id": "2lnysnhX@gl6.com",
+    "percentage": 40,
+    "expectedBucket": 3586,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "oDFnuRAxOEmG3aMi",
+    "id": "user-700107",
+    "percentage": 55,
+    "expectedBucket": 2197,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "OeRZwuOLVJPaLgHt14DH",
+    "id": "f1Ss9@QhEOd9c6.com",
+    "percentage": 73,
+    "expectedBucket": 6219,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "U1hoSY1xRg4wcfwN4w3j",
+    "id": "2TFJw06cV1wSNJ",
+    "percentage": 28,
+    "expectedBucket": 5359,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "leeJQSC18AHlGxARM",
+    "id": "cYbCpsujx@gad7Wwta.com",
+    "percentage": 48,
+    "expectedBucket": 1417,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "BvrxHRdUKc5ldtUfgSD",
+    "id": "user-405184",
+    "percentage": 0,
+    "expectedBucket": 8192,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "GkK5DBwmg1WZEzM",
+    "id": "AwWAr3MPWc@mG6ld.com",
+    "percentage": 59,
+    "expectedBucket": 7562,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "edZ92m30D4i4rvZ9Nv5h",
+    "id": "9v5dMlREUKWTHmDu5uACb",
+    "percentage": 41,
+    "expectedBucket": 1251,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "U68TEmJkVeOE0k9zXedm",
+    "id": "r7ptHQFnEvAy",
+    "percentage": 65,
+    "expectedBucket": 7190,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iuOiW6jpIJNW0h9",
+    "id": "NBD7@iFt.com",
+    "percentage": 63,
+    "expectedBucket": 8908,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "3FmY7IahumBI",
+    "id": "otZ43V1LK5o4IyPQMFnWXujR",
+    "percentage": 31,
+    "expectedBucket": 7976,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "QNJ5ZcDb1Bd8MwE",
+    "id": "N2nXODHo@cRGFPsu.com",
+    "percentage": 23,
+    "expectedBucket": 5216,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "4KLvrbakYtVi5NHnq9X",
+    "id": "user-908638",
+    "percentage": 64,
+    "expectedBucket": 1292,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "EKWk9JyvNVuBIHmg11mD",
+    "id": "54FcehNvkiNv1gq9s0C",
+    "percentage": 93,
+    "expectedBucket": 2106,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ZH6waZfyd8pFnpuMDk",
+    "id": "user-968136",
+    "percentage": 13,
+    "expectedBucket": 9924,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "eZwJU209XvSo0R",
+    "id": "bxp8MaDTuz@BfNJ.com",
+    "percentage": 94,
+    "expectedBucket": 7090,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "BY0j8ejTmMAL",
+    "id": "user-323995",
+    "percentage": 91,
+    "expectedBucket": 8384,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "gyFR4tbbf26Kh2",
+    "id": "user-648825",
+    "percentage": 96,
+    "expectedBucket": 6275,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "qN8SjLLeQ5G7",
+    "id": "user-211781",
+    "percentage": 25,
+    "expectedBucket": 654,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "XmMQuq97XYHBSjHOBX",
+    "id": "user-836700",
+    "percentage": 58,
+    "expectedBucket": 4326,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "8E4h8xu0quNJNWJvdZv",
+    "id": "qAmFuhtdHy@tveiKLOC.com",
+    "percentage": 33,
+    "expectedBucket": 7658,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "0pOhdfv3SXD2MZOt",
+    "id": "user-137125",
+    "percentage": 76,
+    "expectedBucket": 3812,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "e4gWLvdk23KR4OS0",
+    "id": "OQ0GEawIZ@lRl.com",
+    "percentage": 39,
+    "expectedBucket": 9690,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "QtlRFk1PREc7w1YYhmyj",
+    "id": "WK2ws6b@qeqq1.com",
+    "percentage": 15,
+    "expectedBucket": 9488,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "aQ63s0A9sccS",
+    "id": "bLk9dmd@Izm1Aj.com",
+    "percentage": 70,
+    "expectedBucket": 6871,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ensObFXg9MDjg9kgXE",
+    "id": "NZIzUAlL0uWZyzdjWgS",
+    "percentage": 74,
+    "expectedBucket": 3762,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "VEzW5v9FUBRzEiBOi",
+    "id": "LaT6jnrO0y@gYffI9.com",
+    "percentage": 40,
+    "expectedBucket": 6451,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "SaVvtYiMDMPJGR9eAh4",
+    "id": "EjH5N8a3dRpN4G",
+    "percentage": 58,
+    "expectedBucket": 1726,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "DNmg7wH1Rrua8",
+    "id": "user-234137",
+    "percentage": 3,
+    "expectedBucket": 1670,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "83Ob7ESCyGKawL",
+    "id": "user-237024",
+    "percentage": 38,
+    "expectedBucket": 5861,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "nkzxt7Nw0e6ZjT",
+    "id": "sZSlM@9wB9YJPE.com",
+    "percentage": 90,
+    "expectedBucket": 3546,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "sQSq2PyoQb5ronP",
+    "id": "user-998858",
+    "percentage": 34,
+    "expectedBucket": 669,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "kOI2Lz6N2CqBPUWat",
+    "id": "05Nt@399G90dP.com",
+    "percentage": 25,
+    "expectedBucket": 4951,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "qhcO7ETXNB9MCg",
+    "id": "user-126862",
+    "percentage": 63,
+    "expectedBucket": 1521,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Q3jAAQw94mnXsvw6RChF",
+    "id": "fCqifySqC9",
+    "percentage": 27,
+    "expectedBucket": 9244,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "lBlsl1BPK84UF6dtB",
+    "id": "GETIt0RLTn@wQOCVgyV.com",
+    "percentage": 95,
+    "expectedBucket": 3812,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "8Mt6UrvL4AmNjg",
+    "id": "user-183097",
+    "percentage": 26,
+    "expectedBucket": 475,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "NdKKMRmpgHiHKcupmY0R",
+    "id": "user-303618",
+    "percentage": 70,
+    "expectedBucket": 3066,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Sy8vdaEgTzDWKwh00VW",
+    "id": "mIWaoP01K@D1mkBrH.com",
+    "percentage": 72,
+    "expectedBucket": 932,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "4jBRsyYBPWJOEmmD47WG",
+    "id": "I6Z4GLO@xEZO.com",
+    "percentage": 11,
+    "expectedBucket": 170,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Mrq1masy8OCcjV9hU",
+    "id": "0mEzDqdvCg2x50DB",
+    "percentage": 47,
+    "expectedBucket": 9801,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "gt3upzAYO7Sjh6TdGF8L",
+    "id": "4I57o@WmMJt.com",
+    "percentage": 100,
+    "expectedBucket": 6644,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "0vulVmhrxJZI",
+    "id": "cDYSvO0",
+    "percentage": 10,
+    "expectedBucket": 7851,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "7WJJ9PG33eTms",
+    "id": "sm94uxHyHSZvXrBbq54PoT",
+    "percentage": 24,
+    "expectedBucket": 1305,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "qHrCtIsq9W1AwPSpNDk",
+    "id": "user-677296",
+    "percentage": 48,
+    "expectedBucket": 8412,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "FwB9UsMj3q8GYXrxey",
+    "id": "user-519913",
+    "percentage": 53,
+    "expectedBucket": 7579,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "m6K4Nj2HKwzFdazpdn",
+    "id": "A9gHX5sB",
+    "percentage": 30,
+    "expectedBucket": 4478,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "DMdlqtFbkmvx",
+    "id": "user-544624",
+    "percentage": 91,
+    "expectedBucket": 4561,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "1cz4tSYznXIv",
+    "id": "user-207339",
+    "percentage": 43,
+    "expectedBucket": 3748,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "s7iCO438Uwuv1VaHe",
+    "id": "uhbXaX",
+    "percentage": 89,
+    "expectedBucket": 7667,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "AJIE4UqcAX1Rs",
+    "id": "user-67642",
+    "percentage": 25,
+    "expectedBucket": 1475,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "FcqaQGLKMKxShxS2Zao2",
+    "id": "YiwIZceGF",
+    "percentage": 85,
+    "expectedBucket": 2265,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "q5rd5rIVebUJJN",
+    "id": "user-342210",
+    "percentage": 17,
+    "expectedBucket": 6906,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "vlChDsFejakz",
+    "id": "user-836650",
+    "percentage": 100,
+    "expectedBucket": 3555,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "dQNGSgXiyHP0OU5",
+    "id": "user-978135",
+    "percentage": 86,
+    "expectedBucket": 791,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "E6vEAeyPmGpEncFje4PQ",
+    "id": "429Unv",
+    "percentage": 60,
+    "expectedBucket": 3736,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "wjuMs9CyfGX3KMH5",
+    "id": "user-333880",
+    "percentage": 24,
+    "expectedBucket": 9514,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "UyTA0MmTiUO9X7uf63",
+    "id": "cPmv69an@96sGW.com",
+    "percentage": 33,
+    "expectedBucket": 1050,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2vN9oW259XEtO0i8PuT",
+    "id": "5YAYftvG@4kCMDf1.com",
+    "percentage": 29,
+    "expectedBucket": 3779,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "qtNTR03OkDbGkSx0lUC",
+    "id": "user-790998",
+    "percentage": 46,
+    "expectedBucket": 1263,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "cYOJVZ35JBEXIJ",
+    "id": "95bcc8adjP4VOufalmecv",
+    "percentage": 18,
+    "expectedBucket": 8682,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "2b8wu6XPzrmm7mk6ScKm",
+    "id": "ShybC7VxTWijet",
+    "percentage": 79,
+    "expectedBucket": 7778,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "1XBaOHFg6ZvU1gzYJEu7",
+    "id": "user-858671",
+    "percentage": 50,
+    "expectedBucket": 6854,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Fl30ahT9ux6D92q",
+    "id": "sxwDLPv@lO76X1LT.com",
+    "percentage": 97,
+    "expectedBucket": 4271,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "EHWtmJKGP8n74",
+    "id": "3n3VKr",
+    "percentage": 18,
+    "expectedBucket": 4624,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "hiXFova14iEpLwmTHcI",
+    "id": "2T4Vt@KMRjOM.com",
+    "percentage": 15,
+    "expectedBucket": 5870,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "wzfNeYSNPE8zLE860RR",
+    "id": "user-120282",
+    "percentage": 67,
+    "expectedBucket": 8761,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "5Nq5lMsczdDADktV",
+    "id": "urP9FIrmSZUTaQF",
+    "percentage": 12,
+    "expectedBucket": 38,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "OT1y064mvYKGxsm",
+    "id": "VgzQfU@f6CgK.com",
+    "percentage": 1,
+    "expectedBucket": 886,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "e19ZAIj7c0PScdfaU",
+    "id": "lb8Pj2",
+    "percentage": 65,
+    "expectedBucket": 7896,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ffAkxlcCNJHDh9cFbMq",
+    "id": "user-276895",
+    "percentage": 1,
+    "expectedBucket": 9860,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "kBmqci6TZV7ds1uhc7C1",
+    "id": "PjnbmA@WMyJZzL.com",
+    "percentage": 24,
+    "expectedBucket": 2615,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "mFWJenn2Wo8Ewdvkq4",
+    "id": "kZpYdd",
+    "percentage": 51,
+    "expectedBucket": 1432,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "fVMQkIA9BfVRG",
+    "id": "WxVf@Vdj5p.com",
+    "percentage": 53,
+    "expectedBucket": 4413,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "cdnV5L0bsfO3bIsowW",
+    "id": "user-136506",
+    "percentage": 76,
+    "expectedBucket": 9223,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "lOkHzYtbygUD",
+    "id": "125BRIiQ",
+    "percentage": 6,
+    "expectedBucket": 4178,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "CjP50Sc5KmMiB",
+    "id": "XT2kmwgGTb40ZymB",
+    "percentage": 64,
+    "expectedBucket": 5921,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "DOAIOdCftnmYU",
+    "id": "user-151543",
+    "percentage": 42,
+    "expectedBucket": 2491,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "YBlJF3zH71iCuwftG",
+    "id": "user-633903",
+    "percentage": 74,
+    "expectedBucket": 5529,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "eYjAUFOlun4upTo",
+    "id": "mn31K6u4M9FP",
+    "percentage": 38,
+    "expectedBucket": 9139,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "qbOkH0eUUMSD5ps9EDc",
+    "id": "user-949277",
+    "percentage": 80,
+    "expectedBucket": 378,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "yhHxXap3rVhzJTgU",
+    "id": "s51iMIElu@0d913nSr.com",
+    "percentage": 89,
+    "expectedBucket": 6288,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "dQBcZDW26BRsu8CGPH",
+    "id": "8st3UNI2@hXpgupN.com",
+    "percentage": 55,
+    "expectedBucket": 4621,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "vlv3AJG6jHujii",
+    "id": "lffVyKuw",
+    "percentage": 94,
+    "expectedBucket": 5769,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "lOZbL0KYlxqbb9bHV",
+    "id": "PwNNTtBVXz5icIQvLcXkUUn",
+    "percentage": 90,
+    "expectedBucket": 2870,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "pASY1KBNYAPoDk",
+    "id": "3JEcXVi9VjTRCuPsBPwynuO5",
+    "percentage": 68,
+    "expectedBucket": 5849,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "NAsE4DOXJGxUFGhDCMJc",
+    "id": "LNQO1Mysv9@jVXYs.com",
+    "percentage": 80,
+    "expectedBucket": 6299,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Kd0DLwT2P0DH8c",
+    "id": "user-236869",
+    "percentage": 53,
+    "expectedBucket": 6273,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "CeEqXsPnwNb91OHj",
+    "id": "user-152738",
+    "percentage": 94,
+    "expectedBucket": 1317,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "PWd7TzfBLJdA",
+    "id": "TBRmFZoYa",
+    "percentage": 43,
+    "expectedBucket": 332,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "cAX7WGPsc0ZXirC8",
+    "id": "JlItKCoi",
+    "percentage": 79,
+    "expectedBucket": 8911,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "j3K7GgG6mFMlz4mMcrRj",
+    "id": "user-689551",
+    "percentage": 76,
+    "expectedBucket": 1883,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2Lz5zgVuwyoAeq",
+    "id": "user-59342",
+    "percentage": 79,
+    "expectedBucket": 6599,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "1Xmei7vcuhZnAVHau",
+    "id": "GuhEMCZjypl",
+    "percentage": 91,
+    "expectedBucket": 2484,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "sim00R5CA8at2iq",
+    "id": "xB5BgAVgq7z",
+    "percentage": 63,
+    "expectedBucket": 8915,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "HPUbxorhashpim",
+    "id": "WgbvCyh6sJ1g",
+    "percentage": 42,
+    "expectedBucket": 6154,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "SAtvt7PdMMaFb0ic",
+    "id": "I0mMZMIBcB1Vl",
+    "percentage": 8,
+    "expectedBucket": 5193,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "QasYL6aGaG8DZGgN",
+    "id": "YgQ1QugwA@lOk1P.com",
+    "percentage": 55,
+    "expectedBucket": 2355,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "bhFU1ORwAD5S",
+    "id": "TjDZCAPSm5kwHPbS",
+    "percentage": 43,
+    "expectedBucket": 9526,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "oqzLi5SUYY9fzkr3",
+    "id": "user-31303",
+    "percentage": 75,
+    "expectedBucket": 3137,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "xAZh13nt6MeF5",
+    "id": "Mow1faBrgT",
+    "percentage": 18,
+    "expectedBucket": 157,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2Z4QWn5iY9Q6Pr4",
+    "id": "RuK2tu23bY",
+    "percentage": 55,
+    "expectedBucket": 6085,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "gTUZvj9LuPVIqznDZHyj",
+    "id": "bHuGrfg@67N4Ao.com",
+    "percentage": 55,
+    "expectedBucket": 9461,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "teNU3936sli6h2i",
+    "id": "9XHZbN2zow@1zC.com",
+    "percentage": 31,
+    "expectedBucket": 9944,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Y9OZPxHxQpViI5HWy",
+    "id": "F4xSN5Q96E1xmSA",
+    "percentage": 37,
+    "expectedBucket": 2485,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "DfvYuFVBh6W4X",
+    "id": "Z9bhZDE",
+    "percentage": 1,
+    "expectedBucket": 1547,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "5F3tvco1cC40Id",
+    "id": "GKjfEBE@4NCpii.com",
+    "percentage": 23,
+    "expectedBucket": 7865,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "98aNcU3EZAlYOfs7P7T",
+    "id": "1N0w8ITGrI@BzO4XK.com",
+    "percentage": 1,
+    "expectedBucket": 5510,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "sCW99UIoFU195Fo",
+    "id": "user-593576",
+    "percentage": 76,
+    "expectedBucket": 5354,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "jEcAEtupoPK7r2YKxV",
+    "id": "Q30340WT@DJV.com",
+    "percentage": 46,
+    "expectedBucket": 5507,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Bzz7JuututYpZq",
+    "id": "u6kItD@mlUDXEK.com",
+    "percentage": 64,
+    "expectedBucket": 7177,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "Da8T26Tbv7tNOyl0s",
+    "id": "user-57193",
+    "percentage": 12,
+    "expectedBucket": 27,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "qrKOj5UoIXKQ",
+    "id": "sRJ2MI@YFlhipw.com",
+    "percentage": 75,
+    "expectedBucket": 9183,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "UD7f9k8YtEKmpK8LlP4q",
+    "id": "si2vWXPllGU5Dn1lVXsl",
+    "percentage": 86,
+    "expectedBucket": 9087,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "4rv2QbtNGRv0Zd0L",
+    "id": "o2Z2piD6ce",
+    "percentage": 84,
+    "expectedBucket": 9595,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "sCjgTegL9oZoo0KN",
+    "id": "user-452815",
+    "percentage": 70,
+    "expectedBucket": 3165,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "xcgumY22t6uvmO",
+    "id": "user-330432",
+    "percentage": 85,
+    "expectedBucket": 3630,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "RqNlCvFwKldgB",
+    "id": "ZOGUVHMO7hYwHVjlgKo",
+    "percentage": 13,
+    "expectedBucket": 2798,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "7IEYYXNMKBujDBOh",
+    "id": "r6qgbDwVM@JMEaTzr8.com",
+    "percentage": 88,
+    "expectedBucket": 4706,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Efkmd7QpdqDJxUggTO",
+    "id": "o2UGhVr@Q3T3.com",
+    "percentage": 100,
+    "expectedBucket": 4130,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "8dYfFimQkyKPYoL8NbX",
+    "id": "sEfmaUUxxNh",
+    "percentage": 53,
+    "expectedBucket": 94,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "LK8GWe2EgBqDkPHhm",
+    "id": "CpVakallIovscF",
+    "percentage": 47,
+    "expectedBucket": 3013,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "YSezKlQjIn1UvN",
+    "id": "c15dCxI",
+    "percentage": 60,
+    "expectedBucket": 9461,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "5ZvX8Meq0W9cNK0K5F",
+    "id": "user-645143",
+    "percentage": 92,
+    "expectedBucket": 7732,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "81dYNeDR8tz8bOOcSHl",
+    "id": "QpuajlTE2@FcgAZ.com",
+    "percentage": 83,
+    "expectedBucket": 4265,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "2rMEt8v0NW2Eja",
+    "id": "i7Da9MM3O4pdF6NHIllIb7l9",
+    "percentage": 41,
+    "expectedBucket": 3994,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "x66dRRSE0yKDtP",
+    "id": "user-605899",
+    "percentage": 28,
+    "expectedBucket": 9804,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "RVQQuDjgKxDHaBuEm",
+    "id": "user-889036",
+    "percentage": 74,
+    "expectedBucket": 951,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "eBlqDg5bukYHkEciuY5e",
+    "id": "user-469764",
+    "percentage": 9,
+    "expectedBucket": 2862,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "pkmJ5TxqEu1vL9RxiwmH",
+    "id": "mfySdJp",
+    "percentage": 12,
+    "expectedBucket": 4389,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "3Vy7WRzlELHq0",
+    "id": "user-173284",
+    "percentage": 65,
+    "expectedBucket": 5625,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "QeQjIZjvYHLKYMSoVkL",
+    "id": "qABh@9fW.com",
+    "percentage": 37,
+    "expectedBucket": 540,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "beXems3wsom5",
+    "id": "BEunbRxm@whXk3Wq9.com",
+    "percentage": 98,
+    "expectedBucket": 3613,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "wyKmP86UT6VZrMNQmvQ",
+    "id": "sfFbxYijWa5EbWGHLuXMV",
+    "percentage": 88,
+    "expectedBucket": 5307,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Jee4cdIlBLlTW9reZ8",
+    "id": "Xblqxc@xPGopNJV.com",
+    "percentage": 0,
+    "expectedBucket": 5643,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "zcz3UQXszVt1wG",
+    "id": "WHCPp@Du4mOYh.com",
+    "percentage": 8,
+    "expectedBucket": 8652,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ReNKDAyfFxAuU5h2s",
+    "id": "user-232143",
+    "percentage": 55,
+    "expectedBucket": 3403,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "GdCUxUUGsYt9hs",
+    "id": "user-656188",
+    "percentage": 20,
+    "expectedBucket": 8654,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "iiGcxEtvTita5oNQvs3",
+    "id": "RjFX43",
+    "percentage": 11,
+    "expectedBucket": 2487,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "V4vqopYPl9tTzh",
+    "id": "YnK2Qc2GDCMHIiTQl16rwGB",
+    "percentage": 60,
+    "expectedBucket": 9369,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "PmtCLEUx4LMneFwzY",
+    "id": "user-422389",
+    "percentage": 91,
+    "expectedBucket": 4594,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "Rdvx2CNPHQ7sWzoYFsA",
+    "id": "user-424862",
+    "percentage": 4,
+    "expectedBucket": 5510,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "c8rH0nPoDVk4sNrnE",
+    "id": "cvBae50TF@i2DWWx.com",
+    "percentage": 27,
+    "expectedBucket": 6344,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "APCYyVGs0JGr7YMghd9",
+    "id": "user-813358",
+    "percentage": 50,
+    "expectedBucket": 2786,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "j5Fy0zbkKPC6l92my",
+    "id": "88y0je1",
+    "percentage": 0,
+    "expectedBucket": 5631,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "LudQ369tj6tCjPiLin2d",
+    "id": "Mrzexw0A2C2V71",
+    "percentage": 72,
+    "expectedBucket": 8166,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "dEpiKDSXDXCTA",
+    "id": "NOvuB221Ay@KVrp6qF.com",
+    "percentage": 7,
+    "expectedBucket": 947,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "thRkMZ9XPbOYEsSSFgLF",
+    "id": "YRNwL8nHCuTnjmMZ1X",
+    "percentage": 3,
+    "expectedBucket": 1490,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "QzrXdfhRveghzz2ofPt",
+    "id": "QGZCpJFjeX@tKnE.com",
+    "percentage": 52,
+    "expectedBucket": 8399,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "0CKYSszvzeyudmcEZJOi",
+    "id": "qoiAzT9KH6ZGs",
+    "percentage": 55,
+    "expectedBucket": 2405,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ruLcI2MEFZa689b9CHL",
+    "id": "user-19514",
+    "percentage": 60,
+    "expectedBucket": 478,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "t4QxTjAh6KcpoIGNZU",
+    "id": "hWaY@aroZOU.com",
+    "percentage": 53,
+    "expectedBucket": 3428,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "ifCqMf1TIuoNHZybPk",
+    "id": "jqpQb342I1UcLLhy5r5LP",
+    "percentage": 90,
+    "expectedBucket": 5391,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "c2X3Z36YFXZm",
+    "id": "user-526910",
+    "percentage": 38,
+    "expectedBucket": 1797,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "vSIy6lVOdDnfUhymUJN",
+    "id": "XTnP89wkBIhM9xAOfP",
+    "percentage": 53,
+    "expectedBucket": 2802,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "CyYGyJvQajNCH",
+    "id": "gIDKcs3rVOTTSkqgNU5Jb",
+    "percentage": 71,
+    "expectedBucket": 5225,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "CZr4hj3CAeX4",
+    "id": "mKj7ox@eqrMHtS.com",
+    "percentage": 36,
+    "expectedBucket": 5915,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "2AW2RiBIGIJfam",
+    "id": "xeekIIJ@op6s.com",
+    "percentage": 8,
+    "expectedBucket": 9546,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "ZfJ8dLXx81u05DtEkOQ0",
+    "id": "tqEUU0OpOICRRxtz77y",
+    "percentage": 98,
+    "expectedBucket": 3776,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "6osA8N2OEpPBTRHfHp5",
+    "id": "G23SDsXa3CttWIoItKgNRKNJ",
+    "percentage": 47,
+    "expectedBucket": 1937,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "cDZpm87DtYdS4EVvUP9n",
+    "id": "uqMK@FWR.com",
+    "percentage": 29,
+    "expectedBucket": 8521,
+    "expectedDecision": "excluded"
+  },
+  {
+    "salt": "wxpTaq38zanyQx10YPE",
+    "id": "user-13175",
+    "percentage": 40,
+    "expectedBucket": 205,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "KTHKKAeCoEB8iha",
+    "id": "user-327895",
+    "percentage": 89,
+    "expectedBucket": 6024,
+    "expectedDecision": "rollout"
+  },
+  {
+    "salt": "threshold-probe-salt",
+    "id": "probe-8813",
+    "percentage": 47,
+    "expectedBucket": 4699,
+    "expectedDecision": "rollout",
+    "note": "threshold pair (1/2): bucket 4699 is exactly one below the percentage=47 threshold (4700) -> rollout"
+  },
+  {
+    "salt": "threshold-probe-salt",
+    "id": "probe-26768",
+    "percentage": 47,
+    "expectedBucket": 4700,
+    "expectedDecision": "excluded",
+    "note": "threshold pair (2/2): bucket 4700 sits exactly at/over the percentage=47 threshold (4700) -> excluded"
+  }
+]

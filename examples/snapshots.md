@@ -80,6 +80,10 @@ flags.evaluate('checkout.new', { userId: user.id }) ?? false;
 
 This is the same algorithm the service runs; the service's own tests pin it. If the service is down the client keeps the last snapshot, which is the intended failure mode.
 
+## Compatibility contract for the bucketing formula
+
+[`golden-vectors.json`](golden-vectors.json) freezes 500 `(salt, id, percentage)` inputs against the real `Evaluator.bucket()` output and rollout/excluded decision, including boundary cases (0%, 100%, a bucket exactly one above/below a threshold, unicode and empty ids, a 500+ character id, and the same id under two different salts). [`evaluator.js`](evaluator.js) is a standalone, runnable copy of the production evaluator (it re-exports the real class so it cannot drift). `test/golden-vectors.test.js` replays every vector against `src/domain/evaluator.js` on every run. Any change to the bucketing formula or its threshold comparison is a breaking change to that contract, not a silent tweak — it needs an explicit, documented compatibility decision (e.g. a reshuffle-style migration), because it would move users across the rollout line in this doc's client and in every application that ports the formula.
+
 ## Browser applications
 
 Do not ship an API key to browsers. Either evaluate on your backend and embed the results in the page, or put a tiny endpoint in front (`GET /my-flags` → your backend calls `/v1/evaluate` with the session's user).

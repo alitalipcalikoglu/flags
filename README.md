@@ -125,6 +125,28 @@ Class-based; dependencies are injected through constructors, `src/application.js
 
 With `AUDIT_URL` and `AUDIT_API_KEY` set, every completed write request is forwarded to the audit service as one event (`success`, or `denied` on 403) with the calling key as actor, the affected entity as target, client IP, user agent and request id. Events are buffered and sent in batches; the audit service being down never fails a request. Actions: see [examples/audit-events.md](examples/audit-events.md).
 
+## Scaling model
+
+One process owns one SQLite file (`ecosystem.config.cjs` pins `instances: 1`). Beyond the database
+itself, `FlagService` keeps a per-process evaluation cache and per-process evaluation counters
+(the source of `/metrics` and `/v1/stats`), so two instances against the same `DB_PATH` would serve
+correct data but disagree with each other on stats — this topology is not tested or supported. See
+[docs/READINESS.md](docs/READINESS.md) for the full contract.
+
+## Observability
+
+Requests are logged with `reqId` (accepts or generates `X-Request-Id`, no `traceparent` support —
+that is gateway-only so far). `/health` is a static check; `/ready` pings the database, cached for
+10s, and never mutates state. See [docs/READINESS.md](docs/READINESS.md) for the full contract.
+
+## Backup / restore
+
+The only state to protect is the SQLite file at `DB_PATH` (default `./data/flags.db`, plus its WAL
+sidecars while running) — configuration is environment variables, not data. There is no backup
+script in this repository today; capture the file directly (stopped, or via SQLite's online backup)
+and restore by replacing it before starting the service. See [docs/READINESS.md](docs/READINESS.md)
+for the full contract.
+
 ## License
 
 MIT, see [LICENSE](LICENSE).

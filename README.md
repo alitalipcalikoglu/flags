@@ -58,7 +58,7 @@ Errors are JSON: `{ "error": { "code", "message", "details?" } }`.
 
 | Method | Path | Role | Purpose |
 |---|---|---|---|
-| GET | `/health`, `/ready` | none | Liveness; readiness (database, cached 10 s). |
+| GET | `/health`, `/ready`, `/v1/info` | none | Liveness; readiness (database, cached 10 s); service identity (version, API version, capabilities, schema version, service-core version). |
 | GET | `/v1/environments` | read | Visible environments with their version counters. |
 | POST | `/v1/flags` | write | `{ key, kind, description?, tags?, value?, offValue?, enabled? }` → `201 { flag }` with every environment. |
 | GET | `/v1/flags` | read | Sorted by key; `q`, `tag`, `kind`, `archived`, `limit` ≤ 200, `cursor`. |

@@ -17,7 +17,7 @@ test('Config: rejects bad input', () => {
   bad({ FLAGS_API_KEYS: '' }, /FLAGS_API_KEYS is required/);
   bad({ FLAGS_API_KEYS: 'a:short' }, /at least 32/);
   bad({ FLAGS_API_KEYS: `a:${'a'.repeat(40)}:read:qa` }, /unknown environment "qa"/);
-  bad({ FLAGS_API_KEYS: `a:${'a'.repeat(40)}:owner` }, /read, write or readwrite/);
+  bad({ FLAGS_API_KEYS: `a:${'a'.repeat(40)}:owner` }, /one of read, write, readwrite/); // wording now matches every other service's role-list message (service-core's parseApiKeys)
   bad({ FLAGS_ENVIRONMENTS: 'Prod' }, /must match/);
   bad({ FLAGS_ENVIRONMENTS: 'prod,prod' }, /unique/);
   bad({ TLS_CERT_PATH: '/x.pem' }, /must be set together/);

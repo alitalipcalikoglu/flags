@@ -143,8 +143,9 @@ correct data but disagree with each other on stats — this topology is not test
 
 ## Observability
 
-Requests are logged with `reqId` (accepts or generates `X-Request-Id`, no `traceparent` support —
-that is implemented in gateway and console so far). `/health` is a static check; `/ready` pings the database, cached for
+Requests are logged with `reqId` (accepts or generates `X-Request-Id`) and `traceId`/`spanId` (a
+trusted inbound `traceparent`, gated on `TRUST_PROXY`, continues the caller's trace with a fresh
+span-id for this hop; see [OBSERVABILITY.md](../stack/docs/OBSERVABILITY.md)). `/health` is a static check; `/ready` pings the database, cached for
 10s, and never mutates state. See [docs/READINESS.md](docs/READINESS.md) for the full contract.
 
 ## Backup / restore

@@ -135,7 +135,7 @@ With `AUDIT_URL` and `AUDIT_API_KEY` set, every completed write request is forwa
 
 ## Scaling model
 
-One process owns one SQLite file (`ecosystem.config.cjs` pins `instances: 1`). Beyond the database
+**B — single-node stateful.** One process owns one SQLite file (`ecosystem.config.cjs` pins `instances: 1`). Beyond the database
 itself, `FlagService` keeps a per-process evaluation cache and per-process evaluation counters
 (the source of `/metrics` and `/v1/stats`), so two instances against the same `DB_PATH` would serve
 correct data but disagree with each other on stats — this topology is not tested or supported. See
@@ -144,7 +144,7 @@ correct data but disagree with each other on stats — this topology is not test
 ## Observability
 
 Requests are logged with `reqId` (accepts or generates `X-Request-Id`, no `traceparent` support —
-that is gateway-only so far). `/health` is a static check; `/ready` pings the database, cached for
+that is implemented in gateway and console so far). `/health` is a static check; `/ready` pings the database, cached for
 10s, and never mutates state. See [docs/READINESS.md](docs/READINESS.md) for the full contract.
 
 ## Backup / restore

@@ -167,7 +167,7 @@ field on every log line.
 trust gate — per [OBSERVABILITY.md](../../stack/docs/OBSERVABILITY.md) this is an internal service
 reached only from gateway, console or peer services, never directly from an untrusted client) and
 generates one (`randomUUID()`) when absent. It does **not** parse, forward, or log a `traceparent`
-header — that is implemented in `gateway` only, as of this review's Stage 1. `flags` makes no
+header — that is implemented in `gateway` and `console` (Stage 10). `flags` makes no
 outbound HTTP calls in the request path (the audit call is asynchronous, off the request path, and
 does not forward any request-scoped header) so there is nothing to propagate onward today either
 way.

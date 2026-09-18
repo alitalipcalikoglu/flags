@@ -1,0 +1,982 @@
+openapi: 3.1.0
+info:
+  title: flags
+  version: "1.0.0"
+  description: >
+    Feature flags and typed settings per environment: on/off state, percentage rollouts with
+    stable per-user buckets, targeting rules on users/emails/attributes, change history, and
+    cached ETag snapshots for client-side evaluation.
+
+
+    Auth: every `/v1/*` and `/metrics` route requires `Authorization: Bearer <api-key>`
+    (see `ApiKeyAuth` below). A key has a role (`read`, `write`, or `readwrite`) and an optional
+    environment scope (`envs`: a list of environment names, or unscoped when the key applies to
+    every environment). Any operation that names an `:env` path parameter, or an `env`/`to`
+    body/query field, is environment-scope-gated: an environment-scoped key gets `403 FORBIDDEN`
+    for any environment outside its scope, exactly like a role mismatch. This is called out again
+    per operation below where it applies.
+
+
+    Every response carries `Cache-Control: no-store` unless the operation documents its own
+    `Cache-Control` header (only `GET /v1/snapshot/{env}` does).
+servers:
+  - url: /
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: environments
+  - name: flags
+  - name: history
+  - name: evaluate
+  - name: snapshot
+  - name: stats
+  - name: ops
+paths:
+  /health:
+    get:
+      operationId: flags.health.get
+      summary: Liveness probe
+      description: Always `200`. Does not check any dependency.
+      tags: [ops]
+      security: []
+      x-stack-visibility: public
+      responses:
+        "200":
+          description: Process is up.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, enum: [ok] }
+
+  /ready:
+    get:
+      operationId: flags.ready.get
+      summary: Readiness probe
+      description: Runs the database ping, cached for 10 seconds.
+      tags: [ops]
+      security: []
+      x-stack-visibility: public
+      responses:
+        "200":
+          description: Dependencies are healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, enum: [ok] }
+        "503":
+          description: The cached readiness check last failed.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, error]
+                properties:
+                  status: { type: string, enum: [unavailable] }
+                  error: { type: string }
+
+  /v1/info:
+    get:
+      operationId: flags.info.get
+      summary: Service identity and capabilities
+      tags: [ops]
+      security: []
+      x-stack-visibility: public
+      responses:
+        "200":
+          description: Instance identity.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [service, version, apiVersion, capabilities, schemaVersion, serviceCore]
+                properties:
+                  service: { type: string, const: flags }
+                  version: { type: string, description: "This service's own package.json semver." }
+                  apiVersion: { type: string, const: v1 }
+                  capabilities:
+                    type: array
+                    items: { type: string }
+                    examples: [["percentage-rollout", "targeting-rules", "snapshot-etag"]]
+                  schemaVersion: { type: integer, description: "SQLite PRAGMA user_version of the open database." }
+                  serviceCore: { type: string, description: "@atc-web/service-core version actually running." }
+
+  /metrics:
+    get:
+      operationId: flags.metrics.get
+      summary: Prometheus text-format metrics
+      description: Requires a `read`-capable API key. Not rate-limited (registered outside the `/v1` rate-limit hook).
+      tags: [ops]
+      x-stack-visibility: operational
+      responses:
+        "200":
+          description: Prometheus exposition text.
+          content:
+            text/plain:
+              schema: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /v1/environments:
+    get:
+      operationId: flags.environments.list
+      summary: List environments visible to this key
+      description: >
+        Environments are configured via `FLAGS_ENVIRONMENTS`, intersected with the key's own
+        environment scope.
+      tags: [environments]
+      x-stack-visibility: authenticated
+      responses:
+        "200":
+          description: Visible environments with their current change-counter version.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [env, version]
+                      properties:
+                        env: { type: string }
+                        version: { type: integer }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/flags:
+    post:
+      operationId: flags.flags.create
+      summary: Create a flag
+      description: >
+        Creates the flag and seeds identical initial state in every configured environment
+        (`enabled`, `value`, `offValue` default per `kind`, `percentage` 100, no rules).
+        Requires a `write`-capable key.
+      tags: [flags]
+      x-stack-visibility: authenticated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateFlagBody" }
+      responses:
+        "201":
+          description: Flag created.
+          headers:
+            location: { schema: { type: string }, description: "`/v1/flags/{key}`" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [flag]
+                properties:
+                  flag: { $ref: "#/components/schemas/Flag" }
+        "400": { $ref: "#/components/responses/ValidationOrInvalidValue" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/FlagExists" }
+        "413": { $ref: "#/components/responses/ValueTooLarge" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+    get:
+      operationId: flags.flags.list
+      summary: List flags
+      description: Cursor-paginated. `cursor` must already be a valid flag key (schema-enforced), so a malformed cursor is rejected as `400 VALIDATION_FAILED`, not a domain error.
+      tags: [flags]
+      x-stack-visibility: authenticated
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string, minLength: 1, maxLength: 120 }
+          description: Substring filter on key/description.
+        - name: tag
+          in: query
+          schema: { type: string, minLength: 1, maxLength: 40 }
+        - name: kind
+          in: query
+          schema: { $ref: "#/components/schemas/FlagKind" }
+        - name: archived
+          in: query
+          schema: { type: string, enum: ["true", "false"] }
+        - name: limit
+          in: query
+          schema: { type: string, pattern: "^([1-9]|[1-9][0-9]|1[0-9][0-9]|200)$" }
+          description: Default 50, max 200.
+        - name: cursor
+          in: query
+          schema: { $ref: "#/components/schemas/FlagKey" }
+      responses:
+        "200":
+          description: Page of flags.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, nextCursor]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/Flag" } }
+                  nextCursor: { type: [string, "null"] }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/flags/{key}:
+    parameters:
+      - $ref: "#/components/parameters/KeyParam"
+    get:
+      operationId: flags.flags.get
+      summary: Get a flag
+      tags: [flags]
+      x-stack-visibility: authenticated
+      responses:
+        "200":
+          description: The flag.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [flag]
+                properties:
+                  flag: { $ref: "#/components/schemas/Flag" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/FlagNotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+    patch:
+      operationId: flags.flags.patch
+      summary: Patch flag metadata
+      description: >
+        Updates description/tags/archived/reshuffle only — environment state is changed through
+        `PATCH /v1/flags/{key}/envs/{env}`. `reshuffle: true` generates a new rollout salt (every
+        percentage-rollout bucket reshuffles) and, like `archived` changing, bumps every
+        environment's version counter. Requires a `write`-capable key.
+      tags: [flags]
+      x-stack-visibility: authenticated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PatchFlagBody" }
+      responses:
+        "200":
+          description: Updated flag.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [flag]
+                properties:
+                  flag: { $ref: "#/components/schemas/Flag" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/FlagNotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+    delete:
+      operationId: flags.flags.delete
+      summary: Delete a flag
+      description: >
+        **Requires an unscoped API key** (`envs: null`) regardless of role: an environment-scoped
+        key gets `403 FORBIDDEN` unconditionally, even if it has `write` access and the key's
+        scope would otherwise cover every configured environment — the check is on `envs === null`,
+        not on scope coverage. This is in addition to, and checked before, the normal `write`-role
+        requirement.
+      tags: [flags]
+      x-stack-visibility: authenticated
+      responses:
+        "204":
+          description: Deleted. No body.
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: >
+            Either the key lacks `write` access, or the key is environment-scoped (see operation
+            description) — both surface as `FORBIDDEN`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404": { $ref: "#/components/responses/FlagNotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/flags/{key}/history:
+    get:
+      operationId: flags.flags.getHistory
+      summary: History for one flag
+      tags: [history]
+      x-stack-visibility: authenticated
+      parameters:
+        - $ref: "#/components/parameters/KeyParam"
+        - $ref: "#/components/parameters/HistoryLimit"
+        - $ref: "#/components/parameters/HistoryBefore"
+      responses:
+        "200": { $ref: "#/components/responses/HistoryPage" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/FlagNotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/history:
+    get:
+      operationId: flags.history.list
+      summary: History across every flag
+      tags: [history]
+      x-stack-visibility: authenticated
+      parameters:
+        - $ref: "#/components/parameters/HistoryLimit"
+        - $ref: "#/components/parameters/HistoryBefore"
+      responses:
+        "200": { $ref: "#/components/responses/HistoryPage" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/flags/{key}/envs/{env}:
+    parameters:
+      - $ref: "#/components/parameters/KeyParam"
+      - $ref: "#/components/parameters/EnvParam"
+    get:
+      operationId: flags.envs.get
+      summary: Get one flag's state in one environment
+      description: Environment-scope-gated on `{env}` — a key scoped away from this environment gets `403 FORBIDDEN`.
+      tags: [flags]
+      x-stack-visibility: authenticated
+      responses:
+        "200":
+          description: Environment state.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [env, state]
+                properties:
+                  env: { type: string }
+                  state: { $ref: "#/components/schemas/EnvironmentState" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/FlagNotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+      # UNKNOWN_ENV is also reachable here, folded into the shared FlagNotFound/UnknownEnv 404 pair below.
+    patch:
+      operationId: flags.envs.patch
+      summary: Patch one flag's state in one environment
+      description: >
+        Environment-scope-gated on `{env}`. Requires a `write`-capable key. `value`/`offValue` are
+        validated against the flag's `kind`; `rules` are validated and normalized by the domain
+        layer (ids deduplicated-checked, emails lower-cased, list sizes bounded) — this is why
+        `INVALID_RULE` is reachable even though the wire-level JSON Schema for `rules` only checks
+        "array, at most 100 items".
+      tags: [flags]
+      x-stack-visibility: authenticated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PatchEnvBody" }
+      responses:
+        "200":
+          description: Updated environment state.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [env, state]
+                properties:
+                  env: { type: string }
+                  state: { $ref: "#/components/schemas/EnvironmentState" }
+        "400":
+          description: One of `VALIDATION_FAILED` (malformed request shape), `INVALID_VALUE` (`value`/`offValue` does not match the flag's `kind`), or `INVALID_RULE` (a `rules` entry fails validation).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/FlagNotFound" }
+        "413": { $ref: "#/components/responses/ValueTooLarge" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/flags/{key}/envs/{env}/copy:
+    post:
+      operationId: flags.envs.copy
+      summary: Copy one environment's state onto another
+      description: >
+        Copies `enabled`, `value`, `offValue`, `percentage` and `rules` from `{env}` (the path,
+        source) onto `to` (the body, destination) for the same flag. Both `{env}` and `to` are
+        environment-scope-gated independently — a key must have access to both, or it gets
+        `403 FORBIDDEN`. Requires a `write`-capable key.
+      tags: [flags]
+      x-stack-visibility: authenticated
+      parameters:
+        - $ref: "#/components/parameters/KeyParam"
+        - $ref: "#/components/parameters/EnvParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [to]
+              properties:
+                to: { $ref: "#/components/schemas/EnvName", description: "Destination environment (env-scope-gated same as the path {env})." }
+      responses:
+        "200":
+          description: Destination environment's new state.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [env, state]
+                properties:
+                  env: { type: string, description: "Equal to `to` from the request body." }
+                  state: { $ref: "#/components/schemas/EnvironmentState" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/FlagNotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/evaluate:
+    post:
+      operationId: flags.evaluate.post
+      summary: Evaluate flags for a context (JSON body)
+      description: >
+        Environment-scope-gated on the body's `env`. Evaluates every non-archived flag in `env`
+        unless `keys` narrows the set; an unknown requested key evaluates to
+        `{ value: null, reason: "missing" }` (default shape) rather than an error. Response shape
+        depends on `details`: see the two `EvaluateResult*` schemas below.
+      tags: [evaluate]
+      x-stack-visibility: authenticated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EvaluateBody" }
+      responses:
+        "200": { $ref: "#/components/responses/EvaluateOk" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        # UNKNOWN_ENV folded into the FlagNotFound/UnknownEnv-style 404 pattern is N/A here:
+        # env is validated before any flag lookup, so only UnknownEnv (404) applies, never FlagNotFound.
+      x-unknown-env-response: "404 UNKNOWN_ENV — see components.responses.UnknownEnv"
+    get:
+      operationId: flags.evaluate.get
+      summary: Evaluate flags for a context (query string)
+      description: >
+        Same behavior and response shapes as `POST /v1/evaluate`, expressed as query parameters.
+        Environment-scope-gated on `env`.
+
+
+        **Dynamic parameter pattern**: any query key matching `attrs.<name>` is folded into
+        `context.attrs[<name>]` — OpenAPI cannot express an open-ended, dynamically-prefixed query
+        parameter set natively, so this is documented here rather than as a fixed parameter list.
+        `attrs.plan=pro` below is one illustrative example, not an exhaustive enumeration; any
+        number of `attrs.<name>` pairs may be given. A query key that does not start with `attrs.`
+        and is not one of `env`/`userId`/`email`/`keys`/`details` is accepted by the wire schema
+        (open `additionalProperties`) but silently ignored by the handler.
+      tags: [evaluate]
+      x-stack-visibility: authenticated
+      parameters:
+        - name: env
+          in: query
+          required: true
+          schema: { $ref: "#/components/schemas/EnvName" }
+        - name: userId
+          in: query
+          schema: { type: string, minLength: 1, maxLength: 128 }
+        - name: email
+          in: query
+          schema: { type: string, maxLength: 254 }
+        - name: keys
+          in: query
+          schema: { type: string, maxLength: 4000 }
+          description: Comma-separated flag keys to narrow the evaluated set.
+        - name: details
+          in: query
+          schema: { type: string, enum: ["true", "false"] }
+        - name: attrs.plan
+          in: query
+          required: false
+          schema: { type: string, maxLength: 128 }
+          description: >
+            Example only. Any `attrs.<name>` query key is accepted and becomes
+            `context.attrs[<name>]` — this is one instance of that open-ended pattern, not a fixed
+            parameter.
+      responses:
+        "200": { $ref: "#/components/responses/EvaluateOk" }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/snapshot/{env}:
+    get:
+      operationId: flags.snapshot.get
+      summary: Full rule set of an environment, for client-side evaluation
+      description: >
+        Environment-scope-gated on `{env}`. Returns every non-archived flag's complete evaluable
+        state, **including its rollout `salt`** — this is deliberate: the salt is what lets a
+        trusted client reproduce the same stable percentage-rollout bucketing locally (see
+        `Evaluator.bucket`), so it is a genuine, intentional part of this response, not leaked
+        internal state.
+
+
+        Strong `ETag` (`"<env>-<version>"`); send `If-None-Match` with a previously-seen ETag to
+        get `304` with an empty body when nothing changed. This route also overrides the service's
+        default `Cache-Control: no-store` with `private, max-age=0, must-revalidate` so a
+        conditional-GET-capable client can revalidate instead of refetching unconditionally.
+      tags: [snapshot]
+      x-stack-visibility: authenticated
+      parameters:
+        - $ref: "#/components/parameters/EnvParam"
+        - name: If-None-Match
+          in: header
+          required: false
+          schema: { type: string }
+          description: A previously-received `ETag` value; matching it returns `304`.
+      responses:
+        "200":
+          description: Full snapshot.
+          headers:
+            etag: { schema: { type: string }, description: 'Strong ETag, `"<env>-<version>"`.' }
+            cache-control: { schema: { type: string, const: "private, max-age=0, must-revalidate" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Snapshot" }
+        "304":
+          description: Not modified since the ETag given in `If-None-Match`. No body.
+          headers:
+            etag: { schema: { type: string } }
+            cache-control: { schema: { type: string, const: "private, max-age=0, must-revalidate" } }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/UnknownEnv" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/stats:
+    get:
+      operationId: flags.stats.get
+      summary: Aggregate counts
+      tags: [stats]
+      x-stack-visibility: authenticated
+      responses:
+        "200":
+          description: Flag and per-environment counters.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Stats" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      description: >
+        `Authorization: Bearer <secret>`. Keys are configured as `id:secret[:role[:env+env]]` via
+        `FLAGS_API_KEYS`. `role` is `read`, `write`, or `readwrite` (`readwrite` satisfies both a
+        `read`- and a `write`-gated route). The optional trailing `env+env` list scopes the key to
+        those environments only; omitting it (or a key with `envs: null`) means the key applies to
+        every configured environment. A route that names an `:env` path parameter, or an
+        `env`/`to` body/query field, checks this scope and returns `403 FORBIDDEN` for an
+        out-of-scope environment. `DELETE /v1/flags/{key}` additionally requires an *unscoped* key
+        regardless of role — see that operation's own description.
+
+  parameters:
+    KeyParam:
+      name: key
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/FlagKey" }
+    EnvParam:
+      name: env
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/EnvName" }
+      description: Environment-scope-gated — see the `ApiKeyAuth` security scheme description.
+    HistoryLimit:
+      name: limit
+      in: query
+      schema: { type: string, pattern: "^([1-9]|[1-9][0-9]|100)$" }
+      description: Default 50, max 100.
+    HistoryBefore:
+      name: before
+      in: query
+      schema: { type: string, pattern: "^[0-9]{1,15}$" }
+      description: Return entries with an id before this cursor (exclusive, descending order).
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key.
+      headers:
+        www-authenticate: { schema: { type: string, const: Bearer } }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: UNAUTHORIZED, message: "missing or invalid API key" } }
+    Forbidden:
+      description: The key's role or environment scope does not permit this operation (`FORBIDDEN`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: FORBIDDEN, message: "this API key has no read access" } }
+    RateLimited:
+      description: Per-key rate limit exceeded (`RATE_LIMITED`). Does not apply to `GET /metrics`, which is registered outside the `/v1` rate-limit hook.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: RATE_LIMITED, message: "rate limit exceeded, retry in 42" } }
+    ValidationFailed:
+      description: Request shape failed JSON-Schema validation (`VALIDATION_FAILED`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: VALIDATION_FAILED, message: "body/key must match pattern \"^[a-z0-9]+([.\\-_][a-z0-9]+)*$\"", details: [{ path: "/key", message: "must match pattern \"^[a-z0-9]+([.\\-_][a-z0-9]+)*$\"", params: {} }] } }
+    ValidationOrInvalidValue:
+      description: One of `VALIDATION_FAILED` (malformed request shape) or `INVALID_VALUE` (`value`/`offValue` does not match the flag's declared `kind`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    FlagNotFound:
+      description: No flag with this key (`FLAG_NOT_FOUND`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: FLAG_NOT_FOUND, message: "flag \"checkout-v2\" not found" } }
+    FlagExists:
+      description: A flag with this key already exists (`FLAG_EXISTS`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: FLAG_EXISTS, message: "flag \"checkout-v2\" already exists" } }
+    UnknownEnv:
+      description: Not one of this instance's configured environments (`UNKNOWN_ENV`, distinct from an environment-scope `403`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: UNKNOWN_ENV, message: "unknown environment \"qa\"", details: { environments: ["dev", "staging", "prod"] } } }
+    ValueTooLarge:
+      description: A `value`/`offValue`/rule value's JSON encoding exceeds `MAX_VALUE_BYTES` (`VALUE_TOO_LARGE`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+          example: { error: { code: VALUE_TOO_LARGE, message: "value is 20000 bytes, limit 16384" } }
+    HistoryPage:
+      description: Page of history entries, newest first.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [items, nextBefore]
+            properties:
+              items: { type: array, items: { $ref: "#/components/schemas/HistoryEntry" } }
+              nextBefore: { type: [string, "null"] }
+    EvaluateOk:
+      description: >
+        Evaluation result. `x-flags-version` is always set to the environment's current version
+        counter (same number as the snapshot `ETag`'s suffix). Body shape depends on the request's
+        `details` flag — see `EvaluateResultSimple` (default, `details` false/absent) and
+        `EvaluateResultDetailed` (`details=true`).
+      headers:
+        x-flags-version:
+          schema: { type: string }
+          description: The environment's current version counter, as a string.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/EvaluateResultSimple"
+              - $ref: "#/components/schemas/EvaluateResultDetailed"
+
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string, description: "Stable machine-readable error code, e.g. FLAG_NOT_FOUND." }
+            message: { type: string }
+            details: { description: "Present on some errors; shape varies by code." }
+
+    FlagKey:
+      type: string
+      pattern: '^[a-z0-9]+([.\-_][a-z0-9]+)*$'
+      maxLength: 80
+      description: Lower-case dot/dash/underscore-separated segments.
+
+    EnvName:
+      type: string
+      pattern: '^[a-z][a-z0-9-]{0,31}$'
+
+    FlagKind:
+      type: string
+      enum: [boolean, string, number, json]
+
+    AnyValue:
+      description: >
+        Any JSON value. The wire-level JSON Schema accepts anything here; the actual constraint —
+        that the value must match the flag's `kind` (`boolean`/`string`/`number`/`json`, the last
+        accepting any non-function JSON value) — is enforced in the domain layer and surfaces as
+        `400 INVALID_VALUE` on mismatch, plus `413 VALUE_TOO_LARGE` if the JSON encoding exceeds
+        the configured byte limit.
+
+    Match:
+      type: object
+      additionalProperties: false
+      description: >
+        At least one of `userIds`, `emails`, `attrs` must be present and non-empty. Plain JSON
+        Schema cannot cleanly express "at least one of three optional siblings is non-empty" as a
+        single constraint, so this is expressed below with `anyOf` (one of the three must be
+        present with at least one entry) — expressed again here in prose for clarity: an object
+        with all three fields omitted, or all three present but empty, is invalid.
+      properties:
+        userIds:
+          type: array
+          items: { type: string, minLength: 1, maxLength: 254 }
+          maxItems: 1000
+        emails:
+          type: array
+          items: { type: string, minLength: 1, maxLength: 254 }
+          maxItems: 1000
+          description: Lower-cased on write; matched case-insensitively.
+        attrs:
+          type: object
+          description: "Attribute name -> list of allowed values (OR'd); every named attribute present must match."
+          propertyNames: { pattern: '^[a-zA-Z][a-zA-Z0-9_.-]{0,63}$' }
+          additionalProperties:
+            type: array
+            items: { type: string, minLength: 1, maxLength: 254 }
+            maxItems: 1000
+      anyOf:
+        - required: [userIds]
+          properties: { userIds: { type: array, minItems: 1 } }
+        - required: [emails]
+          properties: { emails: { type: array, minItems: 1 } }
+        - required: [attrs]
+          properties: { attrs: { type: object, minProperties: 1 } }
+
+    Rule:
+      type: object
+      additionalProperties: false
+      required: [id, match, value]
+      properties:
+        id: { type: string, pattern: '^[a-z0-9][a-z0-9_-]{0,39}$' }
+        name: { type: string, maxLength: 120 }
+        match: { $ref: "#/components/schemas/Match" }
+        value: { $ref: "#/components/schemas/AnyValue" }
+      description: >
+        The first rule (in array order) whose `match` fits the evaluation context decides the
+        value. Enforced by the domain layer (`ValueCheck.rules`), not the wire-level JSON Schema —
+        a malformed rule surfaces as `400 INVALID_RULE`.
+
+    EnvironmentState:
+      type: object
+      required: [enabled, value, offValue, percentage, rules, version, updatedBy, updatedAt]
+      properties:
+        enabled: { type: boolean }
+        value: { allOf: [{ $ref: "#/components/schemas/AnyValue" }], description: "Served when enabled and inside the rollout, or when a rule matches." }
+        offValue: { allOf: [{ $ref: "#/components/schemas/AnyValue" }], description: "Served when disabled, or outside the rollout, with no matching rule." }
+        percentage: { type: integer, minimum: 0, maximum: 100, description: "Share of identified contexts (by userId, else email) that receive `value` outside any matching rule." }
+        rules: { type: array, items: { $ref: "#/components/schemas/Rule" }, maxItems: 100 }
+        version: { type: integer, description: "This environment's change counter; bumped on every write that touches it." }
+        updatedBy: { type: string }
+        updatedAt: { type: string, format: date-time }
+
+    Flag:
+      type: object
+      required: [key, kind, description, tags, archived, createdBy, createdAt, updatedAt]
+      properties:
+        key: { $ref: "#/components/schemas/FlagKey" }
+        kind: { $ref: "#/components/schemas/FlagKind" }
+        description: { type: string, maxLength: 500 }
+        tags: { type: array, items: { type: string }, maxItems: 20 }
+        archived: { type: boolean }
+        createdBy: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        environments:
+          type: object
+          description: Environment name -> state, restricted to environments visible to the requesting key.
+          additionalProperties: { $ref: "#/components/schemas/EnvironmentState" }
+
+    CreateFlagBody:
+      type: object
+      additionalProperties: false
+      required: [key, kind]
+      properties:
+        key: { $ref: "#/components/schemas/FlagKey" }
+        kind: { $ref: "#/components/schemas/FlagKind" }
+        description: { type: string, maxLength: 500 }
+        tags: { type: array, items: { type: string, minLength: 1, maxLength: 40 }, maxItems: 20 }
+        value: { allOf: [{ $ref: "#/components/schemas/AnyValue" }], description: "Initial `value` for every environment. Defaults to the kind's on-default (`true` for boolean, `\"\"` for string, `0` for number, `null` for json)." }
+        offValue: { allOf: [{ $ref: "#/components/schemas/AnyValue" }], description: "Initial `offValue` for every environment. Defaults to the kind's zero value." }
+        enabled: { type: boolean, description: "Initial `enabled` for every environment. Default false." }
+
+    PatchFlagBody:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        description: { type: string, maxLength: 500 }
+        tags: { type: array, items: { type: string, minLength: 1, maxLength: 40 }, maxItems: 20 }
+        archived: { type: boolean }
+        reshuffle: { type: boolean, description: "Generate a new rollout salt, reshuffling every percentage-rollout bucket." }
+
+    PatchEnvBody:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        enabled: { type: boolean }
+        value: { $ref: "#/components/schemas/AnyValue" }
+        offValue: { $ref: "#/components/schemas/AnyValue" }
+        percentage: { type: integer, minimum: 0, maximum: 100 }
+        rules:
+          type: array
+          maxItems: 100
+          items: { $ref: "#/components/schemas/Rule" }
+          description: Replaces the environment's full rule list. See `Rule` for the effective, domain-enforced shape.
+
+    HistoryEntry:
+      type: object
+      required: [id, key, env, action, actor, before, after, at]
+      properties:
+        id: { type: integer }
+        key: { type: string }
+        env: { type: [string, "null"], description: "null for flag-level actions (flag.create/update/delete); an environment name for env.update/env.copy." }
+        action: { type: string, enum: ["flag.create", "flag.update", "flag.delete", "env.update", "env.copy"] }
+        actor: { type: string, description: "The API key id that made the change." }
+        before: { description: "Prior state snapshot, or null when there was none (e.g. flag.create)." }
+        after: { description: "New state snapshot, or null when the action removed state (e.g. flag.delete)." }
+        at: { type: string, format: date-time }
+
+    Context:
+      type: object
+      additionalProperties: false
+      properties:
+        userId: { type: string, minLength: 1, maxLength: 128 }
+        email: { type: string, minLength: 3, maxLength: 254 }
+        attrs:
+          type: object
+          maxProperties: 32
+          propertyNames: { pattern: '^[a-zA-Z][a-zA-Z0-9_.-]{0,63}$' }
+          additionalProperties: { type: string, maxLength: 128 }
+      description: "Percentage rollouts need `userId` or `email` to bucket on; omitting both makes every rollout-only flag evaluate to `offValue` (reason `excluded`)."
+
+    EvaluateBody:
+      type: object
+      additionalProperties: false
+      required: [env]
+      properties:
+        env: { $ref: "#/components/schemas/EnvName" }
+        context: { $ref: "#/components/schemas/Context" }
+        keys: { type: array, items: { $ref: "#/components/schemas/FlagKey" }, maxItems: 200, description: "Narrows evaluation to these keys. Omit to evaluate every non-archived flag in the environment." }
+        details: { type: boolean, description: "Return `{value, reason, ruleId?}` per flag instead of the bare value." }
+
+    EvaluationReason:
+      type: string
+      enum: [disabled, rule, default, rollout, excluded, missing]
+      description: >
+        disabled: the flag is off in this environment. rule: a targeting rule matched (`ruleId`
+        set). default: percentage is 100, no rollout needed. rollout: the context's stable bucket
+        fell inside `percentage`. excluded: identified but bucketed outside `percentage`, or no
+        identifying `userId`/`email` was given. missing: the key was explicitly requested but does
+        not exist (or is archived) in this environment.
+
+    EvaluationDetail:
+      type: object
+      required: [value, reason]
+      properties:
+        value: { $ref: "#/components/schemas/AnyValue" }
+        reason: { $ref: "#/components/schemas/EvaluationReason" }
+        ruleId: { type: string, description: "Present only when reason is \"rule\"." }
+
+    EvaluateResultSimple:
+      type: object
+      required: [env, version, flags]
+      properties:
+        env: { type: string }
+        version: { type: integer }
+        flags:
+          type: object
+          description: Flag key -> resolved value.
+          additionalProperties: { $ref: "#/components/schemas/AnyValue" }
+
+    EvaluateResultDetailed:
+      type: object
+      required: [env, version, flags]
+      properties:
+        env: { type: string }
+        version: { type: integer }
+        flags:
+          type: object
+          description: "Flag key -> evaluation detail. Present when the request set `details: true` (or `details=true`)."
+          additionalProperties: { $ref: "#/components/schemas/EvaluationDetail" }
+
+    SnapshotFlag:
+      type: object
+      required: [kind, salt, enabled, value, offValue, percentage, rules]
+      properties:
+        kind: { $ref: "#/components/schemas/FlagKind" }
+        salt:
+          type: string
+          description: >
+            This flag's per-flag rollout salt (hex). Included deliberately so a trusted client can
+            reproduce the exact same stable percentage-rollout bucketing locally
+            (`sha256(salt + ":" + id) % 10000 < percentage * 100`), matching `Evaluator.bucket`.
+        enabled: { type: boolean }
+        value: { $ref: "#/components/schemas/AnyValue" }
+        offValue: { $ref: "#/components/schemas/AnyValue" }
+        percentage: { type: integer, minimum: 0, maximum: 100 }
+        rules: { type: array, items: { $ref: "#/components/schemas/Rule" } }
+
+    Snapshot:
+      type: object
+      required: [env, version, flags]
+      properties:
+        env: { type: string }
+        version: { type: integer }
+        flags:
+          type: object
+          description: Flag key -> full evaluable state, for every non-archived flag in the environment.
+          additionalProperties: { $ref: "#/components/schemas/SnapshotFlag" }
+
+    Stats:
+      type: object
+      required: [flags, environments]
+      properties:
+        flags:
+          type: object
+          required: [total, archived]
+          properties:
+            total: { type: integer }
+            archived: { type: integer }
+        environments:
+          type: array
+          items:
+            type: object
+            required: [env, version, enabled, evaluations]
+            properties:
+              env: { type: string }
+              version: { type: integer }
+              enabled: { type: integer, description: "Count of flags with `enabled: true` in this environment." }
+              evaluations: { type: integer, description: "Evaluation requests served for this environment since process start." }

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: flags
-  version: "1.0.0"
+  version: "1.1.0"
   description: >
     Feature flags and typed settings per environment: on/off state, percentage rollouts with
     stable per-user buckets, targeting rules on users/emails/attributes, change history, and

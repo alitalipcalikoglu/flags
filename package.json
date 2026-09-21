@@ -1,6 +1,6 @@
 {
   "name": "@atc-web/flags",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Feature flags and typed settings per environment: targeting rules, percentage rollouts, change history, cached snapshots over HTTP",
   "license": "MIT",

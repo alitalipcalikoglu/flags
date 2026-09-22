@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { readServiceVersion } from '@atc-web/service-core/fastify';
 import { Maintenance } from '../src/maintenance.js';
 import { PROD_KEY, READ_KEY, RW_KEY, WRITE_KEY, bearer, buildApp } from './helpers.js';
 
 const json = (/** @type {import('light-my-request').Response} */ r) => JSON.parse(r.body);
+const PACKAGE_VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 
 test('API: probes, auth, roles and environment scoping', async (t) => {
   const { app } = await buildApp();
@@ -15,10 +15,9 @@ test('API: probes, auth, roles and environment scoping', async (t) => {
   const spec = await app.inject({ url: '/openapi.yaml' });
   assert.equal(spec.body, readFileSync(new URL('../openapi.yaml', import.meta.url), 'utf8'));
   assert.match(String(spec.headers['content-type']), /^text\/yaml/);
-  const version = readServiceVersion(import.meta.url);
   const info = json(await app.inject({ url: '/v1/info' }));
   assert.equal(info.service, 'flags');
-  assert.equal(info.version, version);
+  assert.equal(info.version, PACKAGE_VERSION);
   assert.equal(info.apiVersion, 'v1');
   assert.deepEqual(info.capabilities, ['percentage-rollout', 'targeting-rules', 'snapshot-etag']);
   assert.equal(typeof info.schemaVersion, 'number');
